@@ -47,6 +47,7 @@ section > .wrap{display:grid;gap:22px}
 .lede{color:var(--ink-2);font-size:1.02rem}
 code,.mono{font-family:var(--mono);font-size:.86em}
 a{color:var(--accent)}
+[hidden]{display:none!important}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 
 /* hero */
@@ -146,6 +147,7 @@ header.hero .wrap{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1
 .caret{background:none;border:0;color:var(--muted);cursor:pointer;width:20px;height:22px;padding:0;font-size:.7rem;transition:transform .15s;flex:none}
 .fam.open .caret{transform:rotate(90deg);color:var(--accent)}
 .fambody{padding:0 0 4px 22px}
+.viewbox{display:grid;gap:6px;padding-bottom:12px;border-bottom:1px solid var(--line);margin-bottom:4px}.viewbox .seg{justify-self:start}.viewnote{margin:0;font-size:.76rem;color:var(--muted);line-height:1.35}
 .linkgrp{display:inline-flex;gap:6px;align-items:center;color:var(--muted);font-size:.72rem}
 .search{width:100%;font:inherit;font-size:.85rem;padding:7px 9px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink)}
 .linkbtn{font:500 .72rem var(--mono);background:none;border:0;color:var(--accent);cursor:pointer;padding:0;text-transform:none;letter-spacing:0}
@@ -233,7 +235,7 @@ footer{padding-block:32px 48px;border-top:1px solid var(--line);color:var(--mute
   <div class="wrap">
     <p class="eyebrow">The science in 2 minutes</p>
     <h2 id="h-science">What one number in the spreadsheet means</h2>
-    <p class="lede read">Each cell line glows when its receptor is switched on. Pick a test type: what goes into the well, and a real curve from the dataset.</p>
+    <p class="lede read">Each cell line glows when its receptor is switched on. Pick a test type: what goes into the well, and the curve it gives. The curves here are idealised to show the principle; the dashboard below holds the real data.</p>
     <div class="lab">
       <div class="scen" id="scen" role="tablist" aria-label="Test types"></div>
       <div class="labview">
@@ -251,13 +253,14 @@ footer{padding-block:32px 48px;border-top:1px solid var(--line);color:var(--mute
   <div class="wrap">
     <p class="eyebrow">Interactive dashboard</p>
     <h2 id="h-dash">Explore the dose–response data</h2>
-    <p class="lede read">Tick at least one box in each group and the charts, table and export update together. Molecules are grouped by chemical family; hover a filter’s name for its definition. It opens on rosiglitazone, a reference PPARγ activator, across the four PPARγ cell lines.</p>
+    <p class="lede read">It opens on an essential view: a few cell lines, agonist and antagonist tests, and example molecules in five groups. Switch to <b>Full database</b> to get everything in the same dashboard. Tick at least one box in each group; hover a filter’s name for its definition. The first view shows rosiglitazone, a reference PPARγ activator, on four species.</p>
     <div class="bench">
       <form class="panel" id="filters" onsubmit="return false">
+        <div class="viewbox"><span class="seg" id="segView" role="group" aria-label="Dashboard view"><button type="button" data-v="ess" aria-pressed="true">Essential</button><button type="button" data-v="full" aria-pressed="false">Full database</button></span><p class="viewnote" id="viewNote"></p></div>
         <fieldset><legend><span class="def" data-def="cl">Cell line</span><button type="button" class="linkbtn" data-all="cl">all / none</button></legend><div id="f-cl"></div></fieldset>
         <div class="cols2">
           <fieldset><legend><span class="def" data-def="mode">Mode</span></legend><div id="f-mode"></div></fieldset>
-          <fieldset><legend><span class="def" data-def="ser">Serum</span></legend><div id="f-ser"></div></fieldset>
+          <fieldset id="fsSer"><legend><span class="def" data-def="ser">Serum</span></legend><div id="f-ser"></div></fieldset>
         </div>
         <fieldset><legend><span class="def" data-def="mol">Molecule</span><span class="linkgrp"><button type="button" class="linkbtn" id="molAll">all</button> · <button type="button" class="linkbtn" id="molClear">clear</button></span></legend>
           <input class="search" id="molSearch" type="search" placeholder="Search 179 molecules" aria-label="Search molecules">
@@ -485,28 +488,29 @@ function drawPlate(){ // hero: a still of the dashboard on real data
 }
 
 /* ---------- interactive assay explainer ---------- */
+// idealised Hill curves: [label, bottom, top, log10 EC50, slope, control?]
 const SCEN = [
   { id:'ago', name:'Agonist', sub:'Does the chemical switch the receptor on?', receptor:true, ref:0, test:3, glow:.9,
-    curves:[['Troglitazone','HG5LN-hPPARg','Ago','YES','Troglitazone · human PPARγ'],['Troglitazone','HG5LN','Ago','YES','Same doses · control cell line',true]],
-    text:'The chemical is added alone. Light rises with the dose as more receptors are switched on. The control line stays flat at the same doses, so the light really comes from PPARγ.' },
+    curves:[['Test chemical · receptor cell line',.04,1,-7,1],['Same doses · control cell line',1,1,-7,1,true]],
+    text:'The chemical is added alone. Light rises with the dose as more receptors are switched on, up to the level of the reference agonist (100 %). The control line stays flat at the same doses, so the light really comes from the receptor.' },
   { id:'ant', name:'Antagonist', sub:'Can it block the reference agonist?', receptor:true, ref:80, test:3, block:true, glow:.15,
-    curves:[['Alachlor','HG5LN-hPPARg','Antago','YES','Alachlor + rosiglitazone at 80 % · human PPARγ'],['Alachlor','HG5LN','Ago','YES','Same doses · control cell line',true]],
-    text:'The reference agonist is added at the dose that gives about 80 % of its maximum. The herbicide alachlor pushes the light down while the control line stays at 100 %: the cells are fine, the receptor is blocked.' },
+    curves:[['Test chemical + reference at 80 %',.8,.05,-6.5,1],['Same doses · control cell line',1,1,-6.5,1,true]],
+    text:'The reference agonist is added at the dose that gives about 80 % of its maximum. An antagonist pushes the light down while the control line stays at 100 %: the cells are fine, the receptor is blocked.' },
   { id:'comp', name:'Competition', sub:'Does more reference push it out?', receptor:true, ref:100, test:3, block:true, glow:.5,
-    curves:[['Diclofenac','HG5LN-hPPARg','Antago','YES','Diclofenac vs 80 % reference'],['Diclofenac','HG5LN-hPPARg','Antago ref100','YES','Diclofenac vs 100 % reference']],
+    curves:[['Antagonist vs 80 % reference',.8,.05,-6.5,1],['Antagonist vs 100 % reference',1,.05,-5.6,1]],
     text:'The same antagonist test is repeated with the reference agonist at its full dose. A competitive antagonist then needs higher doses to win, so the curve moves to the right: both molecules fight for the same pocket.' },
   { id:'tox', name:'Toxicity check', sub:'Is the drop real or are the cells dying?', receptor:true, ref:80, test:3, dying:true, glow:.25,
-    curves:[['TBT','HG5LN-hPXR','Antago','YES','TBT · human PXR, antagonist test'],['TBT','HG5LN','Ago','YES','Same doses · control cell line',true]],
-    text:'TBT seems to block human PXR, but the control line also loses light at the highest doses: part of that drop is cells dying, not a true antagonist effect. Reading both curves together avoids a false positive.' },
+    curves:[['Test chemical · antagonist test',.8,.05,-5.7,1.4],['Same doses · control cell line',1,.08,-5.6,1.4,true]],
+    text:'The light drops in the antagonist test, but the control line loses its light at the same doses: the drop comes from cells dying, not from a blocked receptor. Reading both curves together avoids a false positive.' },
   { id:'syn', name:'Synergy with EE2', sub:'Do two chemicals act more together?', receptor:true, ref:0, test:2, ee2:true, glow:.6,
-    curves:[['trans-Chlordane','HG5LN-mPXR','Ago','YES','trans-Chlordane alone · mouse PXR'],['trans-Chlordane','HG5LN-mPXR','Synergie EE2','YES','trans-Chlordane + EE2'],['EE2','HG5LN-mPXR','Ago','YES','EE2 alone',true]],
-    text:'The pill estrogen EE2 and the pesticide trans-nonachlor are known to activate PXR far more together than alone. Organochlorine pesticides were retested with EE2: here the mixture switches mouse PXR on at lower doses, while EE2 alone does nothing.' },
-  { id:'spa', name:'SPA70', sub:'Does a PXR antagonist flatten the response?', receptor:true, ref:80, test:0, spa:true, glow:.12,
-    curves:[['SPA70','HG5LN-hPXR','Antago','YES','SPA70 + SR 12813 at 80 % · human PXR']],
-    text:'SPA70 is a selective antagonist of human PXR. Added on top of the reference agonist SR 12813, it flattens the PXR response as its dose rises. It was then used at a fixed 1 µM dose to check whether other responses go through PXR.' },
-  { id:'ser', name:'Serum or not', sub:'How much of the dose reaches the cells?', receptor:true, ref:0, test:3, serum:true, glow:.55, xmax:-5.4,
-    curves:[['GW 7647','HG5LN-zfPPARg','Ago','YES','GW 7647 · zebrafish PPARγ, with serum'],['GW 7647','HG5LN-zfPPARg','Ago','NO','GW 7647 · without serum']],
-    text:'Serum proteins can catch lipophilic chemicals, so less of the dose reaches the receptor. Here the same compound switches zebrafish PPARγ on at doses about ten times lower when the medium has no serum.' },
+    curves:[['Chemical alone',.05,.45,-5.8,1],['Chemical + EE2',.08,.95,-6.7,1],['EE2 alone',.08,.08,-6,1,true]],
+    text:'Some chemicals act much more strongly together than alone. The pill estrogen EE2 and some organochlorine pesticides are known to activate PXR this way, so they were retested together: the mixture switches the receptor on at lower doses and higher, while EE2 alone does nothing.' },
+  { id:'spa', name:'SPA70', sub:'Does a PXR antagonist flatten the response?', receptor:true, ref:0, test:3, spa:true, glow:.12,
+    curves:[['PXR activator alone',.05,.95,-6.5,1],['Same activator + SPA70 at 1 µM',.04,.18,-6.2,1]],
+    text:'SPA70 blocks human PXR. A chemical that switches PXR on gives a full curve alone and an almost flat one when SPA70 is added at a fixed 1 µM dose: the response really goes through PXR.' },
+  { id:'ser', name:'Serum or not', sub:'How much of the dose reaches the cells?', receptor:true, ref:0, test:3, serum:true, glow:.55,
+    curves:[['Without serum',.04,1,-7.3,1],['With serum',.04,1,-6.3,1]],
+    text:'Serum proteins can catch lipophilic chemicals, so less of the dose reaches the receptor. Without serum, the same chemical switches the receptor on at doses about ten times lower.' },
 ];
 let scIdx = 0;
 function scRows(mol, cl, mode, ser){
@@ -566,12 +570,12 @@ function miniChart(el, curves){
   let s = `<svg class="chart" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}">`;
   for (const t of yTicks(ymax)) s += `<line x1="${m.l}" x2="${W-m.r}" y1="${Y(t)}" y2="${Y(t)}" stroke="var(--line)" stroke-width=".6"/><text x="${m.l-6}" y="${Y(t)+3.5}" text-anchor="end">${Math.round(t*100)}%</text>`;
   for (let e = xmin; e <= xmax; e++) s += `<text x="${X(e)}" y="${m.t+ih+16}" text-anchor="middle">10${sup(e)}</text>`;
-  s += `<text class="axt" x="${m.l+iw/2}" y="${H-4}" text-anchor="middle">Concentration (M) · Hill fit</text>`;
+  s += `<text class="axt" x="${m.l+iw/2}" y="${H-4}" text-anchor="middle">Concentration (M, log scale)</text>`;
   curves.forEach(c => {
-    const f = c.pts.length >= 4 ? fitHill(c.pts) : null;
+    const f = c.p ? {p: c.p} : c.pts.length >= 4 ? fitHill(c.pts) : null;
     if (f){ const lo = c.pts[0].x - .15, hi = c.pts[c.pts.length-1].x + .15; let d = '';
-      for (let i = 0; i <= 50; i++){ const x = lo + (hi-lo)*i/50; d += (i?'L':'M') + X(x).toFixed(1) + ' ' + Y(Math.min(ymax, hill(f.p, x))).toFixed(1); }
-      s += `<path d="${d}" fill="none" stroke="${c.color}" stroke-width="2" ${c.dash?'stroke-dasharray="2 4"':'stroke-dasharray="6 4"'}/>`; }
+      for (let i = 0; i <= 60; i++){ const x = lo + (hi-lo)*i/60; d += (i?'L':'M') + X(x).toFixed(1) + ' ' + Y(Math.min(ymax, hill(f.p, x))).toFixed(1); }
+      s += `<path d="${d}" fill="none" stroke="${c.color}" stroke-width="${c.p ? 2.5 : 2}" ${c.dash?'stroke-dasharray="2 4"':c.p?'':'stroke-dasharray="6 4"'}/>`; }
     else s += `<path d="${c.pts.map((p,i)=>(i?'L':'M')+X(p.x).toFixed(1)+' '+Y(p.y).toFixed(1)).join('')}" fill="none" stroke="${c.color}" stroke-width="2"/>`;
     c.pts.forEach(p => { if (p.sd) s += `<path d="M${X(p.x)} ${Y(p.y-p.sd)}V${Y(p.y+p.sd)}" stroke="${c.color}" stroke-width="1" opacity=".6"/>`; s += `<circle cx="${X(p.x)}" cy="${Y(p.y)}" r="4" fill="${c.color}" stroke="var(--surface)" stroke-width="1.5"/>`; });
   });
@@ -582,11 +586,8 @@ function showScenario(i){
   document.querySelectorAll('#scen button').forEach((b,j) => b.setAttribute('aria-selected', j === i));
   $('#assayDiagram').innerHTML = cellSVG(S);
   const cols = ['--s2','--s1','--s7'];
-  let curves = S.curves.map((c,k) => ({ pts: scRows(c[0],c[1],c[2],c[3]), label: c[4], dash: !!c[5], color: css(c[5] ? '--muted' : cols[k]) })).filter(c => c.pts.length);
-  // keep the dose range shared by every curve of the example
-  if (curves.length > 1){ const common = curves.map(c => new Set(c.pts.map(p => p.x.toFixed(3)))).reduce((a,b) => new Set([...a].filter(x => b.has(x))));
-    if (common.size >= 4) curves.forEach(c => c.pts = c.pts.filter(p => common.has(p.x.toFixed(3)))); }
-  if (S.xmax != null) curves.forEach(c => c.pts = c.pts.filter(p => p.x <= S.xmax));
+  const curves = S.curves.map(([label, bot, top, ec, h, ctl], k) => { const p = [bot, top, ec, h];
+    return { p, label, dash: !!ctl, color: css(ctl ? '--muted' : cols[k]), pts: [-9,-8.5,-8,-7.5,-7,-6.5,-6,-5.5,-5,-4.5].map(x => ({ x, y: hill(p, x) })) }; });
   $('#scTitle').textContent = S.name; $('#scSub').textContent = S.sub;
   miniChart($('#scChart'), curves);
   $('#scLegend').innerHTML = curves.map(c => `<span><i style="background:${c.color}"></i>${esc(c.label)}</span>`).join('');
@@ -634,7 +635,8 @@ $('#heat').addEventListener('mousemove', e => { const t = e.target; if (t.tagNam
 $('#heat').addEventListener('mouseleave', hideTip);
 $('#heat').addEventListener('click', e => { const t = e.target; if (t.tagName !== 'rect' || !t.dataset.v) return;
   state.mol = new Set([+t.dataset.m]); state.cl = new Set([+t.dataset.c]); state.mode = new Set([0]); state.ser = new Set([0]);
-  syncControls(); update(); $('#dashboard').scrollIntoView({behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'}); });
+  const f = famOf.get(+t.dataset.m); if (f) famOpen.add('full:' + f.join('-'));
+  if (view === 'ess' && !(ESSI.mol.has(+t.dataset.m) && ESSI.cl.has(+t.dataset.c))) setView('full'); else { syncControls(); update(); } $('#dashboard').scrollIntoView({behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'}); });
 $('#famChips').innerHTML = Object.entries(famNames).map(([k,v]) => `<button type="button" class="chip" data-f="${k}" aria-pressed="${k==='all'}">${v}${k==='all'?'':' · '+famSets[k].size}</button>`).join('');
 $('#famChips').addEventListener('click', e => { const b = e.target.closest('.chip'); if(!b) return; fam = b.dataset.f;
   document.querySelectorAll('#famChips .chip').forEach(x => x.setAttribute('aria-pressed', x === b)); drawHeat(); });
@@ -648,13 +650,38 @@ function boxes(el, labels, key, dim){
 }
 boxes('#f-cl', D.cls.map((_,i)=>clN(i)), 'cl', 1); boxes('#f-mode', D.modes.map((_,i)=>moN(i)), 'mode', 2); boxes('#f-ser', D.sers.map((_,i)=>seN(i)), 'ser', 3);
 document.querySelectorAll('#f-mode .c, #f-ser .c').forEach(x => x.remove());
-state.mol.forEach(i => { const f = famOf.get(i); if (f) famOpen.add(f.join('-')); });
+/* essential view: a small, readable slice of the same data */
+const ESS = { cl: ['HG5LN','HG5LN-hPPARg','HG5LN-mPPARg','HG5LN-zfPPARg','HELN-xPPARg'], mode: ['Ago','Antago'], ser: ['YES'],
+  groups: [['Medicines', ['Rosiglitazone','Troglitazone','Ibuprofen','Indomethacin','Diclofenac']],
+           ['Plastics and additives', ['TBBPA','MEHP','BBP','TPP']],
+           ['PFAS', ['PFOA','PFNA','PFOS']],
+           ['Pesticides and biocides', ['Alachlor','Tolylfluanid','TBT']],
+           ['Reference antagonists', ['GW 9662','T0070907']]] };
+const ESSI = { cl: new Set(ESS.cl.map(c => D.cls.indexOf(c))), mode: new Set(ESS.mode.map(m => D.modes.indexOf(m))), ser: new Set(ESS.ser.map(x => D.sers.indexOf(x))) };
+const ESSFAM = [['Example molecules', ESS.groups.map(([n, l]) => [n, l.map(m => D.mols.indexOf(m)).filter(i => i >= 0)])]];
+ESSI.mol = new Set(ESSFAM[0][1].flatMap(g => g[1]));
+let view = 'ess';
+const FAMS = () => view === 'ess' ? ESSFAM : FAMILIES;
+ESSFAM[0][1].forEach((_, fi) => famOpen.add('ess:0-' + fi));
+state.mol.forEach(i => { const f = famOf.get(i); if (f) famOpen.add('full:' + f.join('-')); });
+function setView(v){
+  view = v;
+  document.querySelectorAll('#segView button').forEach(b => b.setAttribute('aria-pressed', b.dataset.v === v));
+  if (v === 'ess') for (const k of ['cl','mode','ser','mol']){ for (const i of [...state[k]]) if (!ESSI[k].has(i)) state[k].delete(i); }
+  if (v === 'ess' && !state.ser.size) ESSI.ser.forEach(i => state.ser.add(i));
+  document.querySelectorAll('#f-cl label, #f-mode label').forEach(l => { const cb = l.querySelector('input'); l.hidden = v === 'ess' && !ESSI[cb.dataset.k].has(+cb.dataset.i); });
+  $('#fsSer').hidden = v === 'ess';
+  $('#molSearch').placeholder = v === 'ess' ? `Search ${ESSI.mol.size} molecules` : `Search ${D.mols.length} molecules`;
+  $('#viewNote').textContent = v === 'ess' ? `${ESSI.mol.size} example molecules, ${ESSI.cl.size} cell lines, agonist and antagonist tests.` : `Everything: ${D.mols.length} molecules in 25 chemical families, ${D.cls.length} cell lines, ${D.modes.length} test types, with and without serum.`;
+  syncControls(); update();
+}
+$('#segView').addEventListener('click', e => { const b = e.target.closest('button'); if (b && b.dataset.v !== view) setView(b.dataset.v); });
 function renderMolList(){
   const q = $('#molSearch').value.trim().toLowerCase(); let html = '', any = false;
-  FAMILIES.forEach(([top, fams], ti) => {
+  FAMS().forEach(([top, fams], ti) => {
     let block = '';
     fams.forEach(([name, ids], fi) => {
-      const key = ti+'-'+fi, hit = q ? ids.filter(i => D.mols[i].toLowerCase().includes(q) || name.toLowerCase().includes(q) || top.toLowerCase().includes(q)) : ids;
+      const key = view+':'+ti+'-'+fi, hit = q ? ids.filter(i => D.mols[i].toLowerCase().includes(q) || name.toLowerCase().includes(q) || top.toLowerCase().includes(q)) : ids;
       if (!hit.length) return;
       const n = ids.filter(i => state.mol.has(i)).length, open = q || famOpen.has(key);
       block += `<div class="fam${open?' open':''}"><div class="famhead"><button type="button" class="caret" data-fam="${key}" aria-expanded="${!!open}" aria-label="Show ${esc(name)}">▸</button><label class="ck famck"><input type="checkbox" data-fam="${key}" ${n===ids.length?'checked':''} data-ind="${n>0&&n<ids.length?1:0}"> <span>${esc(name)}</span><span class="c">${n ? n+' / ' : ''}${ids.length}</span></label></div>`
@@ -666,14 +693,14 @@ function renderMolList(){
   $('#f-mol').querySelectorAll('input[data-ind="1"]').forEach(cb => cb.indeterminate = true);
 }
 $('#f-mol').addEventListener('click', e => { const b = e.target.closest('.caret'); if (!b) return; const k = b.dataset.fam; famOpen.has(k) ? famOpen.delete(k) : famOpen.add(k); renderMolList(); });
-$('#f-mol').addEventListener('change', e => { const cb = e.target; if (!cb.dataset.fam) return; const [ti, fi] = cb.dataset.fam.split('-').map(Number), ids = FAMILIES[ti][1][fi][1];
+$('#f-mol').addEventListener('change', e => { const cb = e.target; if (!cb.dataset.fam) return; const [ti, fi] = cb.dataset.fam.split(':')[1].split('-').map(Number), ids = FAMS()[ti][1][fi][1];
   const allOn = ids.every(i => state.mol.has(i)); ids.forEach(i => allOn ? state.mol.delete(i) : state.mol.add(i)); if (!allOn) famOpen.add(cb.dataset.fam); renderMolList(); update(); });
 function syncControls(){ document.querySelectorAll('#filters input[data-k]').forEach(cb => { cb.checked = state[cb.dataset.k].has(+cb.dataset.i); }); renderMolList(); }
 $('#filters').addEventListener('change', e => { const cb = e.target; if (!cb.dataset.k) return; const s = state[cb.dataset.k]; cb.checked ? s.add(+cb.dataset.i) : s.delete(+cb.dataset.i); if (cb.dataset.k === 'mol') renderMolList(); update(); });
 $('#molSearch').addEventListener('input', renderMolList);
 $('#molClear').addEventListener('click', () => { state.mol.clear(); syncControls(); update(); });
-$('#molAll').addEventListener('click', () => { D.mols.forEach((_,i) => state.mol.add(i)); syncControls(); update(); });
-document.querySelector('[data-all="cl"]').addEventListener('click', () => { if (state.cl.size === D.cls.length) state.cl.clear(); else D.cls.forEach((_,i) => state.cl.add(i)); syncControls(); update(); });
+$('#molAll').addEventListener('click', () => { D.mols.forEach((_,i) => { if (view === 'full' || ESSI.mol.has(i)) state.mol.add(i); }); syncControls(); update(); });
+document.querySelector('[data-all="cl"]').addEventListener('click', () => { const vis = D.cls.map((_,i) => i).filter(i => view === 'full' || ESSI.cl.has(i)); if (vis.every(i => state.cl.has(i))) state.cl.clear(); else vis.forEach(i => state.cl.add(i)); syncControls(); update(); });
 $('#fitToggle').addEventListener('change', e => { state.fit = e.target.checked; update(); });
 
 /* ---------- definitions on hover ---------- */
@@ -894,7 +921,7 @@ $('#copyCsv').addEventListener('click', async e => {
 
 /* ---------- boot & theme reactivity ---------- */
 function redrawAll(){ drawPlate(); drawHeat(); drawPlate96(); update(); if (typeof SCEN !== "undefined") showScenario(scIdx); }
-initScenarios(); syncControls(); redrawAll();
+initScenarios(); setView('ess'); redrawAll();
 let rz; addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(() => { drawHeat(); update(); showScenario(scIdx); }, 120); });
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change', redrawAll);
 new MutationObserver(redrawAll).observe(document.documentElement, {attributes:true, attributeFilter:['data-theme']});
