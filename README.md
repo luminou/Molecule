@@ -97,7 +97,8 @@ The page in `docs/` rebuilds the dashboard in plain JavaScript and SVG so it can
 **Added for the web page**
 - An interactive explainer of the seven test types (agonist, antagonist, competition, toxicity check, synergy with EE2, co-exposure with SPA70, with or without serum), each with a real example curve from the database.
 - Definitions on hover in the dashboard: each parameter, each mode, and each cell line with its lab name and reference agonist.
-- A 96-well plate view showing how the 4 replicate wells of one dose become one row of the lab sheet.
+- Molecules grouped by chemical family (bisphenols, PFAS, organochlorines, azole fungicides, glitazones, PPAR/PXR/LXR research ligands, blind study samples…), each family ticked or cleared in one click.
+- A 96-well plate view, with one real example per test type, showing how the 4 replicate wells of one dose become one row of the lab sheet.
 - An overview heatmap (molecule × cell line, strongest agonist response), where hatched cells mark conditions that were never tested and pale blue marks tested-but-inactive. Clicking a cell loads it in the dashboard.
 
 ## Author

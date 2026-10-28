@@ -27,7 +27,7 @@
 
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--ink);font:15px/1.6 var(--body);-webkit-font-smoothing:antialiased}
-.wrap{max-width:1180px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1320px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
 .read{max-width:68ch}
 h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0;letter-spacing:-.01em}
 h2{font-size:clamp(1.5rem,1.1rem + 1.4vw,2.1rem);font-weight:700;line-height:1.15}
@@ -69,13 +69,13 @@ header.hero .wrap{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1
 .glossary dt,.glossary .k{font:500 .8rem/1.5 var(--mono);color:var(--accent)}
 .glossary .v{color:var(--ink-2);font-size:.92rem}
 
-.lab{display:grid;grid-template-columns:230px minmax(0,1fr);gap:16px;align-items:start}
-.scen{display:grid;gap:6px}
-.scen button{all:unset;cursor:pointer;display:grid;gap:2px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--surface);font-size:.86rem;color:var(--ink)}
+.lab{display:grid;grid-template-columns:minmax(0,1fr);gap:14px;align-items:start}
+.scen{display:grid;gap:8px;grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+.scen button{all:unset;cursor:pointer;display:grid;gap:4px;align-content:start;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--surface);font-size:.86rem;color:var(--ink)}
 .scen button small{font-size:.74rem;color:var(--muted)}
 .scen button[aria-selected="true"]{border-color:var(--accent);background:var(--accent-soft)}
 .scen button:focus-visible{outline:2px solid var(--accent)}
-.labview{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;min-width:0;align-items:stretch}
+.labview{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:16px;min-width:0;align-items:stretch}
 .labview .diagram{display:flex;align-items:center}
 .labchart{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px;min-width:0}
 .labhead{display:grid;gap:2px;margin-bottom:6px}.labhead span{font:.74rem var(--mono);color:var(--muted)}
@@ -84,7 +84,7 @@ header.hero .wrap{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1
 .reftable{max-height:none}
 .controls{display:flex;flex-wrap:wrap;gap:14px 22px;align-items:center}
 .ctl{display:flex;align-items:center;gap:8px;font:600 .7rem var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
-.seg{display:inline-flex;border:1px solid var(--line);border-radius:9px;overflow:hidden;background:var(--surface)}
+.seg{display:inline-flex;flex-wrap:wrap;border:1px solid var(--line);border-radius:9px;overflow:hidden;background:var(--surface)}
 .seg button{font:500 .8rem var(--body);border:0;background:transparent;color:var(--ink-2);padding:8px 12px;cursor:pointer;border-right:1px solid var(--line);text-transform:none;letter-spacing:0}
 .seg button:last-child{border-right:0}
 .seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
@@ -92,6 +92,7 @@ header.hero .wrap{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1
 .platewrap{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px;overflow-x:auto}
 .platewrap svg{display:block;width:100%;min-width:480px;height:auto}
 .pinfo{display:grid;gap:12px;min-width:0}
+.pdesc{margin:0;font-size:.92rem;color:var(--ink-2)}.pdesc b{color:var(--ink)}
 .pkey{display:grid;gap:6px;font-size:.84rem;color:var(--ink-2)}
 .pkey span{display:flex;align-items:center;gap:8px}
 .pkey i{width:14px;height:14px;border-radius:50%;flex:none;border:2px solid var(--kc);background:color-mix(in srgb,var(--kc) 22%,transparent)}
@@ -129,7 +130,14 @@ header.hero .wrap{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1
 .ck input{accent-color:var(--accent);margin:0;width:15px;height:15px;flex:none}
 .ck .c{color:var(--muted);font:.72rem var(--mono);margin-left:auto}
 .cols2{display:grid;grid-template-columns:1fr 1fr;gap:0 10px}
-.mollist{max-height:250px;overflow-y:auto;border:1px solid var(--line);border-radius:8px;padding:6px 8px;background:var(--sunk)}
+.mollist{max-height:360px;overflow-y:auto;border:1px solid var(--line);border-radius:8px;padding:4px 8px 8px;background:var(--sunk)}
+.famtop{font:600 .66rem var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);padding:10px 0 3px;border-bottom:1px solid var(--line);margin-bottom:2px;position:sticky;top:-4px;background:var(--sunk);z-index:1}
+.famhead{display:flex;align-items:center;gap:2px}
+.famhead .famck{flex:1;font-weight:600}
+.caret{background:none;border:0;color:var(--muted);cursor:pointer;width:20px;height:22px;padding:0;font-size:.7rem;transition:transform .15s;flex:none}
+.fam.open .caret{transform:rotate(90deg);color:var(--accent)}
+.fambody{padding:0 0 4px 22px}
+.linkgrp{display:inline-flex;gap:6px;align-items:center;color:var(--muted);font-size:.72rem}
 .search{width:100%;font:inherit;font-size:.85rem;padding:7px 9px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink)}
 .linkbtn{font:500 .72rem var(--mono);background:none;border:0;color:var(--accent);cursor:pointer;padding:0;text-transform:none;letter-spacing:0}
 .btn{font:600 .82rem var(--body);border:1px solid var(--ink);background:var(--ink);color:var(--bg);padding:8px 12px;border-radius:8px;cursor:pointer}
@@ -255,7 +263,7 @@ footer{padding-block:32px 48px;border-top:1px solid var(--line);color:var(--mute
           <fieldset><legend><span class="def" data-def="mode">Mode</span></legend><div id="f-mode"></div></fieldset>
           <fieldset><legend><span class="def" data-def="ser">Serum</span></legend><div id="f-ser"></div></fieldset>
         </div>
-        <fieldset><legend><span class="def" data-def="mol">Molecule</span><button type="button" class="linkbtn" id="molClear">clear</button></legend>
+        <fieldset><legend><span class="def" data-def="mol">Molecule</span><span class="linkgrp"><button type="button" class="linkbtn" id="molAll">all</button> · <button type="button" class="linkbtn" id="molClear">clear</button></span></legend>
           <input class="search" id="molSearch" type="search" placeholder="Search 179 molecules" aria-label="Search molecules">
           <div class="mollist" id="f-mol"></div>
         </fieldset>
@@ -285,14 +293,15 @@ footer{padding-block:32px 48px;border-top:1px solid var(--line);color:var(--mute
   <div class="wrap">
     <p class="eyebrow">Inside one experiment</p>
     <h2 id="h-plate">From 96 wells to one row of the database</h2>
-    <p class="lede read">Each plate tests two chemicals on one cell line: the first in rows A–D, the second in rows E–H, at 7 concentrations diluted 3.16-fold, in 4 replicate wells. The four wells of one dose are averaged into the <code>moy</code> value of one row in the lab sheet. Hover a well to see what it holds and the row it ends up in.</p>
-    <div class="controls"><div class="ctl">Test <span class="seg" id="segPlate"><button type="button" data-v="ago" aria-pressed="true">Agonist</button><button type="button" data-v="ant" aria-pressed="false">Antagonist</button></span></div></div>
+    <p class="lede read">Each plate tests two chemicals on one cell line: the first in rows A–D, the second in rows E–H, at 7 concentrations diluted 3.16-fold, in 4 replicate wells. The four wells of one dose are averaged into the <code>moy</code> value of one row in the lab sheet. Pick a test type, then hover a well to see what it holds and the row it ends up in.</p>
+    <div class="controls"><div class="ctl">Test</div><span class="seg" id="segPlate" role="group" aria-label="Test type"></span></div>
     <div class="platebox">
       <div class="platewrap"><svg id="plate96" viewBox="0 0 640 420" role="img" aria-label="96-well plate layout"></svg></div>
       <div class="pinfo">
+        <p class="pdesc" id="pdesc"></p>
         <div class="pkey" id="pkey"></div>
         <div class="pwell" id="pwell"><b>Hover a well</b><span>Its content and the database row it feeds appear here.</span></div>
-        <p class="pnote">Layout from the robot program in my lab notebook. Well brightness is the measured mean from the database, with the run-to-run spread applied to the replicates.</p>
+        <p class="pnote">Layout from the robot program in my lab notebook for the agonist and antagonist tests; the other tests are drawn on the same layout for illustration. Well brightness is the measured mean from the database, with the run-to-run spread applied to the replicates.</p>
       </div>
     </div>
   </div>
@@ -384,8 +393,48 @@ const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':
 const byKey = new Map(); // series key -> rows
 for (const r of D.rows){ const k = r[0]+'|'+r[1]+'|'+r[2]+'|'+r[3]; if(!byKey.has(k)) byKey.set(k, []); byKey.get(k).push(r); }
 for (const a of byKey.values()) a.sort((x,y) => x[4]-y[4]);
-const famNames = {all:'All molecules', Pesticides_plate:'Pesticides plate', GOLIATH:'GOLIATH project', PPAR_lig:'PPAR ligands', Bisphenols:'Bisphenols', Blind:'Blind study', Other:'Other'};
-const famSets = {}; for (const k in D.flags) famSets[k] = new Set(D.flags[k]);
+/* ---------- chemical families (molecule filter) ---------- */
+const FAMILIES = [
+  ['Industrial chemicals', [
+    ['Bisphenols', ["BPA","BPAF","BPAP","BPB","BPC","BPCCl","BPE","BPF","2,2'-BPF","BPFL","BPM","BPP","BPPB","BPPH","BPS","BPZ","BADGE","4,4'-Oxydiphenol"]],
+    ['Halogenated bisphenols', ["2-MonoCBPA","2,2'-DiCBPA","2,4'-DiCBPA","2,2',6-TriCBPA","TCBPA","TBBPA"]],
+    ['PFAS', ["PFBS","PFHexA","PFHepA","PFOA","PFOS","PFNA","PFDA","PFUnDA"]],
+    ['Phthalates', ["BBP","DBP","MEHP"]],
+    ['Organophosphate flame retardants', ["TPP","ToTP","TmTP","TpTP","Tricresyl phosphate"]],
+    ['Antimicrobials and UV filters', ["Triclosan","Triclocarban","Benzophenone-1","Benzophenone-2","Benzophenone-3"]],
+    ['Dioxin-like and organotin', ["TCDD","PCB 126","TBT"]],
+  ]],
+  ['Pesticides', [
+    ['DDT and related', ["2,4'-DDT","2,4'-DDD","2,4'-DDE","4,4'-DDT","4,4'-DDD","4,4'-DDE","Methoxychlor","HPTE"]],
+    ['Other organochlorines', ["Aldrin","Dieldrin","Endrin","Chlordecone","Mirex","cis-Chlordane","trans-Chlordane","Oxychlordane","cis-Nonachlor","trans-Nonachlor","Heptachlor","Heptachlor endo-epoxide","Heptachlor exo-epoxide","Endosulfan","Toxaphene","Lindane","Hexachlorobenzene"]],
+    ['Pyrethroids', ["Cyhalothrin","Cypermethrin","Deltamethrin","Fenvalerate","Fluvalinate","Tefluthrin","Etofenprox"]],
+    ['Organophosphate insecticides', ["Chlorpyrifos","Ethoprophos","Fenamiphos","Pirimiphos-methyl","Tolclofos-methyl"]],
+    ['Other insecticides', ["Aldicarb","Fipronil","Fipronil sulfone","Thiacloprid","Diflubenzuron","Flufenoxuron"]],
+    ['Azole fungicides', ["Cyproconazole","Fenbuconazole","Imazalil","Penconazole","Prochloraz","Propiconazole","Tebuconazole","Triflumizole"]],
+    ['Other fungicides', ["Boscalid","Bupirimate","Captan","Diethofencarb","Fenarimol","Metalaxyl","Pencycuron","Thiabendazole","Thiophanate-methyl","Tolylfluanid","Vinclozolin","Vinclozolin M2","Ziram"]],
+    ['Herbicides', ["Alachlor","Metolachlor","Pretilachlor","Chlorsulfuron","Azimsulfuron","Nicosulfuron","Diuron","Linuron","Chlortoluron","Bifenox","Oxyfluorfen","Chlorpropham","Diclofop-methyl","Mecoprop","Glyphosate","Metamitron","Oxadiazon","Pendimethalin","Propyzamide","Terbuthylazine"]],
+  ]],
+  ['Pharmaceuticals', [
+    ['Glitazones (antidiabetics)', ["Rosiglitazone","Troglitazone","Pioglitazone","Ciglitazone"]],
+    ['Fibrates', ["Clofibrate","Clofibric acid"]],
+    ['Painkillers and anti-inflammatories', ["Acetaminophen","Aspirin","Ibuprofen","Diclofenac","Indomethacin"]],
+    ['Steroids and hormones', ["EE2","Dexamethasone","RU486","Tibolone"]],
+    ['Other drugs', ["Clotrimazole","Dabrafenib"]],
+  ]],
+  ['Research ligands', [
+    ['PPAR ligands', ["GW 7647","CP 775,146","GW 6471","GW 1929","GW 9662","T0070907","SR 1664","SR 202","SR 16832","FH 535"]],
+    ['PXR and CAR ligands', ["SR 12813","PCN","SPA70","TCPOBOP"]],
+    ['LXR ligands', ["GW 3965","T0901317","WAY-252623","GSK 2033","SR 9238","SR 9243"]],
+    ['CD-series compounds', ["CD 4700","CD 4918","CD 5477"]],
+  ]],
+  ['Blind study', [
+    ['Blind study samples', D.mols.filter(m => m.startsWith('Blind study'))],
+  ]],
+].map(([top, fams]) => [top, fams.map(([name, list]) => [name, list.map(m => D.mols.indexOf(m)).filter(i => i >= 0)])]);
+const famOf = new Map(); FAMILIES.forEach(([top, fams], ti) => fams.forEach(([name, ids], fi) => ids.forEach(i => famOf.set(i, [ti, fi]))));
+const famOpen = new Set();
+const famNames = {all:'All molecules'}; const famSets = {};
+FAMILIES.forEach(([top, fams]) => { famNames[top] = top; famSets[top] = new Set(fams.flatMap(f => f[1])); });
 
 /* ---------- hero plate (canvas) ---------- */
 function drawPlate(){
@@ -575,16 +624,31 @@ function boxes(el, labels, key, dim){
 }
 boxes('#f-cl', D.cls.map((_,i)=>clN(i)), 'cl', 1); boxes('#f-mode', D.modes.map((_,i)=>moN(i)), 'mode', 2); boxes('#f-ser', D.sers.map((_,i)=>seN(i)), 'ser', 3);
 document.querySelectorAll('#f-mode .c, #f-ser .c').forEach(x => x.remove());
+state.mol.forEach(i => { const f = famOf.get(i); if (f) famOpen.add(f.join('-')); });
 function renderMolList(){
-  const q = $('#molSearch').value.trim().toLowerCase();
-  const items = D.mols.map((m,i) => [m,i]).filter(([m]) => !q || m.toLowerCase().includes(q));
-  items.sort((a,b) => (state.mol.has(b[1]) - state.mol.has(a[1])));
-  $('#f-mol').innerHTML = items.map(([m,i]) => `<label class="ck"><input type="checkbox" id="mol-${i}" data-k="mol" data-i="${i}" ${state.mol.has(i)?'checked':''}> <span>${esc(m)}</span></label>`).join('') || '<p class="notice">No molecule matches.</p>';
+  const q = $('#molSearch').value.trim().toLowerCase(); let html = '', any = false;
+  FAMILIES.forEach(([top, fams], ti) => {
+    let block = '';
+    fams.forEach(([name, ids], fi) => {
+      const key = ti+'-'+fi, hit = q ? ids.filter(i => D.mols[i].toLowerCase().includes(q) || name.toLowerCase().includes(q) || top.toLowerCase().includes(q)) : ids;
+      if (!hit.length) return;
+      const n = ids.filter(i => state.mol.has(i)).length, open = q || famOpen.has(key);
+      block += `<div class="fam${open?' open':''}"><div class="famhead"><button type="button" class="caret" data-fam="${key}" aria-expanded="${!!open}" aria-label="Show ${esc(name)}">▸</button><label class="ck famck"><input type="checkbox" data-fam="${key}" ${n===ids.length?'checked':''} data-ind="${n>0&&n<ids.length?1:0}"> <span>${esc(name)}</span><span class="c">${n ? n+' / ' : ''}${ids.length}</span></label></div>`
+        + (open ? `<div class="fambody">${hit.map(i => `<label class="ck"><input type="checkbox" id="mol-${i}" data-k="mol" data-i="${i}" ${state.mol.has(i)?'checked':''}> <span>${esc(D.mols[i])}</span></label>`).join('')}</div>` : '') + `</div>`;
+    });
+    if (block){ any = true; html += `<div class="famtop">${esc(top)}</div>` + block; }
+  });
+  $('#f-mol').innerHTML = any ? html : '<p class="notice">No molecule matches.</p>';
+  $('#f-mol').querySelectorAll('input[data-ind="1"]').forEach(cb => cb.indeterminate = true);
 }
+$('#f-mol').addEventListener('click', e => { const b = e.target.closest('.caret'); if (!b) return; const k = b.dataset.fam; famOpen.has(k) ? famOpen.delete(k) : famOpen.add(k); renderMolList(); });
+$('#f-mol').addEventListener('change', e => { const cb = e.target; if (!cb.dataset.fam) return; const [ti, fi] = cb.dataset.fam.split('-').map(Number), ids = FAMILIES[ti][1][fi][1];
+  const allOn = ids.every(i => state.mol.has(i)); ids.forEach(i => allOn ? state.mol.delete(i) : state.mol.add(i)); if (!allOn) famOpen.add(cb.dataset.fam); renderMolList(); update(); });
 function syncControls(){ document.querySelectorAll('#filters input[type=checkbox]').forEach(cb => { cb.checked = state[cb.dataset.k].has(+cb.dataset.i); }); renderMolList(); }
-$('#filters').addEventListener('change', e => { const cb = e.target; if (!cb.dataset.k) return; const s = state[cb.dataset.k]; cb.checked ? s.add(+cb.dataset.i) : s.delete(+cb.dataset.i); update(); });
+$('#filters').addEventListener('change', e => { const cb = e.target; if (!cb.dataset.k) return; const s = state[cb.dataset.k]; cb.checked ? s.add(+cb.dataset.i) : s.delete(+cb.dataset.i); if (cb.dataset.k === 'mol') renderMolList(); update(); });
 $('#molSearch').addEventListener('input', renderMolList);
 $('#molClear').addEventListener('click', () => { state.mol.clear(); syncControls(); update(); });
+$('#molAll').addEventListener('click', () => { D.mols.forEach((_,i) => state.mol.add(i)); syncControls(); update(); });
 document.querySelector('[data-all="cl"]').addEventListener('click', () => { if (state.cl.size === D.cls.length) state.cl.clear(); else D.cls.forEach((_,i) => state.cl.add(i)); syncControls(); update(); });
 $('#fitToggle').addEventListener('change', e => { state.fit = e.target.checked; update(); });
 
@@ -612,37 +676,58 @@ $('#filters').addEventListener('mouseleave', hideTip);
 /* ---------- 96-well plate (inside one experiment) ---------- */
 const PL = { mode: 'ago' };
 const PLEX = {
-  ago: { top: ['Rosiglitazone','HG5LN-hPPARg','Ago','YES'], bot: ['Troglitazone','HG5LN-hPPARg','Ago','YES'] },
-  ant: { top: ['T0070907','HG5LN-hPPARg','Antago','YES'], bot: ['GW 9662','HG5LN-hPPARg','Antago','YES'] },
+  ago: { label:'Agonist', top:['Rosiglitazone','HG5LN-hPPARg','Ago','YES'], bot:['Troglitazone','HG5LN-hPPARg','Ago','YES'], col3:'ctl',
+    desc:'Two PPARγ activators. Light rises from left to right as the dose goes up.', note:['',''] },
+  ant: { label:'Antagonist', top:['T0070907','HG5LN-hPPARg','Antago','YES'], bot:['GW 9662','HG5LN-hPPARg','Antago','YES'], col3:'ref80',
+    desc:'Every chemical well also gets the reference agonist at 80 %. The light fades as the antagonist dose rises.', note:['with rosiglitazone at 80 %','with rosiglitazone at 80 %'] },
+  comp: { label:'Competition', top:['Diclofenac','HG5LN-hPPARg','Antago','YES'], bot:['Diclofenac','HG5LN-hPPARg','Antago ref100','YES'], col3:'ref80',
+    desc:'The same chemical against two doses of reference agonist. With 100 % reference (bottom), the fade starts later: both compete for the same pocket.', note:['with rosiglitazone at 80 %','with rosiglitazone at 100 %'] },
+  tox: { label:'Toxicity check', top:['TBT','HG5LN','Ago','YES'], bot:['TBBPA','HG5LN','Ago','YES'], col3:'ctl', tox:true,
+    desc:'The control cell line glows whatever the receptor. A well that dims here means fewer living cells, not a blocked receptor.', note:['',''] },
+  syn: { label:'Synergy with EE2', top:['trans-Chlordane','HG5LN-mPXR','Ago','YES'], bot:['trans-Chlordane','HG5LN-mPXR','Synergie EE2','YES'], col3:'ctl',
+    desc:'The same chemical alone (top) and together with ethinylestradiol (bottom), to look for a cocktail effect on mouse PXR.', note:['alone','together with EE2'] },
+  spa: { label:'SPA70', top:['PCN','HG5LN-mPXR','Ago','YES'], bot:['PCN','HG5LN-mPXR','Coexpo SP70 10-6 M','YES'], col3:'ctl',
+    desc:'PCN alone (top) and with 1 µM SPA70 (bottom). SPA70 targets human PXR, and the mouse PXR response barely changes.', note:['alone','with SPA70 at 1 µM'] },
+  ser: { label:'Serum or not', top:['MEHP','HG5LN-hPPARg','Ago','YES'], bot:['MEHP','HG5LN-hPPARg','Ago','NO'], col3:'ctl',
+    desc:'The same chemical in medium with serum (top) and without serum (bottom). Without serum, more of the dose reaches the cells.', note:['in medium with serum','in medium without serum (1 % pluronic acid)'] },
 };
-function plRows(q){ const a = scRows(...q); return a.slice(-7); }
+function plRows(q){ return scRows(...q).slice(-7); }
+function plRef(){ const q = PLEX[PL.mode], r = REFS[q.top[1]], d = r[1].split(' / '); return { name: r[0], full: d[0], p80: d[1] }; }
 function plWell(r, c){ // r 0..7, c 0..11
-  const half = r < 4 ? 'top' : 'bot', row = 'ABCDEFGH'[r], rep = r % 4;
-  if (c === 0 || c === 11 || (c === 2 && PL.mode === 'ago')) return { kind:'ctl', title:`${row}${c+1} · solvent control`, text:'Cells with the solvent only (0.1 % DMSO): the background light, or basal level.' };
-  if (c === 2) return { kind:'ref80', title:`${row}3 · reference agonist at 80 %`, text:'Rosiglitazone at 30 nM alone: the level an antagonist has to push down.' };
-  if (c === 1 || c === 10) return { kind:'ref', title:`${row}${c+1} · reference agonist, full dose`, text:'Rosiglitazone at 1 µM: defines 100 % for this cell line.' };
-  const k = c - 3, q = PLEX[PL.mode][half], pts = plRows(q), p = pts[k];
-  return { kind:'chem', half, k, rep, q, p, title:`${row}${c+1} · ${q[0]}, dose ${k+1} of 7`, text:`Replicate ${rep+1} of 4${PL.mode === 'ant' ? ', with rosiglitazone at 80 %' : ''}.` };
+  const ex = PLEX[PL.mode], half = r < 4 ? 'top' : 'bot', row = 'ABCDEFGH'[r], rep = r % 4, ref = plRef();
+  if (ex.tox && c <= 2 || ex.tox && c === 10 || c === 0 || c === 11 || (c === 2 && ex.col3 === 'ctl'))
+    return { kind:'ctl', title:`${row}${c+1} · solvent control`, text: ex.tox ? 'Control cells with the solvent only: they glow at full level (100 %), since their light does not depend on a receptor.' : 'Cells with the solvent only (0.1 % DMSO): the background light, or basal level.' };
+  if (c === 2) return { kind:'ref80', title:`${row}3 · reference agonist at 80 %`, text:`${ref.name} at ${ref.p80} alone: the level an antagonist has to push down.` };
+  if (c === 1 || c === 10) return { kind:'ref', title:`${row}${c+1} · reference agonist, full dose`, text:`${ref.name} at ${ref.full}: defines 100 % for this cell line.` };
+  const k = c - 3, q = ex[half], pts = plRows(q), p = pts[k];
+  if (!p) return { kind:'none', title:`${row}${c+1} · not used`, text:`This example has ${pts.length} doses in the database, so this column stays empty here.` };
+  const note = ex.note[half === 'top' ? 0 : 1];
+  return { kind:'chem', half, k, rep, q, p, title:`${row}${c+1} · ${q[0]}, dose ${k+1} of ${pts.length}`, text:`Replicate ${rep+1} of 4${note ? ', ' + note : ''}.` };
 }
 function drawPlate96(){
-  const svg = $('#plate96'), x0 = 56, y0 = 64, step = 44, rad = 17;
-  const col = { ctl:css('--muted'), ref:css('--s2'), ref80:css('--s2'), chem:css('--s3') };
+  const ex = PLEX[PL.mode], svg = $('#plate96'), x0 = 56, y0 = 64, step = 44, rad = 17;
+  const col = { ctl:css('--muted'), ref:css('--s2'), ref80:css('--s2'), chem:css('--s3'), none:css('--line') };
   let s = `<rect x="6" y="6" width="628" height="408" rx="22" style="fill:var(--sunk);stroke:var(--line)"/>`;
   for (let c=0;c<12;c++) s += `<text x="${x0+c*step}" y="34" text-anchor="middle" style="font:11px var(--mono);fill:var(--muted)">${c+1}</text>`;
   for (let r=0;r<8;r++) s += `<text x="26" y="${y0+r*step+4}" text-anchor="middle" style="font:11px var(--mono);fill:var(--muted)">${'ABCDEFGH'[r]}</text>`;
   s += `<line x1="40" x2="590" y1="${y0+3.5*step}" y2="${y0+3.5*step}" style="stroke:var(--muted);stroke-dasharray:4 4"/>`;
-  ['top','bot'].forEach((h,j) => { const q = PLEX[PL.mode][h]; s += `<text x="606" y="${y0+(1.5+4*j)*step+4}" text-anchor="middle" transform="rotate(90 606 ${y0+(1.5+4*j)*step})" style="font:600 10px var(--body);fill:var(--ink-2)">${esc(q[0].toUpperCase())}</text>`; });
+  ['top','bot'].forEach((h,j) => { const q = ex[h], lab = (q[0] + (ex.top[0] === ex.bot[0] ? ' · ' + (j ? 'B' : 'A') : '')).toUpperCase(); s += `<text x="606" y="${y0+(1.5+4*j)*step+4}" text-anchor="middle" transform="rotate(90 606 ${y0+(1.5+4*j)*step})" style="font:600 10px var(--body);fill:var(--ink-2)">${esc(lab)}</text>`; });
   for (let r=0;r<8;r++) for (let c=0;c<12;c++){
     const w = plWell(r,c), cx = x0+c*step, cy = y0+r*step;
-    let v = w.kind === 'ref' ? 1 : w.kind === 'ref80' ? .8 : w.kind === 'ctl' ? .12 : 0;
+    let v = w.kind === 'ref' ? 1 : w.kind === 'ref80' ? .8 : w.kind === 'ctl' ? (ex.tox ? 1 : .12) : 0;
     if (w.kind === 'chem' && w.p){ const jitter = [-.9,.4,-.2,.7][w.rep] * (w.p.sd || 0); v = w.p.y + jitter; }
     v = Math.max(0, Math.min(1, v));
-    s += `<g class="w" data-r="${r}" data-c="${c}" tabindex="0"><circle class="ring" cx="${cx}" cy="${cy}" r="${rad}" style="fill:var(--surface);stroke:${col[w.kind]};stroke-width:2"/>`;
+    s += `<g class="w" data-r="${r}" data-c="${c}" tabindex="0"><circle class="ring" cx="${cx}" cy="${cy}" r="${rad}" style="fill:var(--surface);stroke:${col[w.kind]};stroke-width:2${w.kind==='none'?';stroke-dasharray:3 3':''}"/>`;
     if (v > .02) s += `<circle cx="${cx}" cy="${cy}" r="${rad-4}" style="fill:var(--glow);opacity:${(.1+.9*v).toFixed(2)}"/>`;
     s += `</g>`;
   }
   svg.innerHTML = s;
-  $('#pkey').innerHTML = [[css('--muted'),'Solvent control (basal)'],[css('--s2'),'Reference agonist: 100 % (cols 2 and 11)' + (PL.mode==='ant' ? ', 80 % alone (col 3)' : '')],[css('--s3'),'Chemicals: 7 doses × 4 replicates (cols 4–10)']].map(([c,l]) => `<span><i style="--kc:${c}"></i>${l}</span>`).join('');
+  const keys = [[css('--muted'), ex.tox ? 'Solvent control: full light, 100 %' : 'Solvent control (basal)']];
+  if (!ex.tox) keys.push([css('--s2'), `Reference agonist ${plRef().name}: 100 % (cols 2 and 11)` + (ex.col3 === 'ref80' ? ', 80 % alone (col 3)' : '')]);
+  keys.push([css('--s3'), `Top: ${ex.top[0]} ${ex.note[0]} · bottom: ${ex.bot[0]} ${ex.note[1]}`.replace(/\s+·/,' ·')]);
+  $('#pkey').innerHTML = keys.map(([c,l]) => `<span><i style="--kc:${c}"></i>${esc(l)}</span>`).join('');
+  $('#pdesc').innerHTML = `<b>${esc(ex.label)}</b> · ${esc(clN(D.cls.indexOf(ex.top[1])))}. ${esc(ex.desc)}`;
+  $('#pwell').innerHTML = '<b>Hover a well</b><span>Its content and the database row it feeds appear here.</span>';
 }
 function plHover(e){ const g = e.target.closest('.w'); if (!g) return;
   const w = plWell(+g.dataset.r, +g.dataset.c);
@@ -651,6 +736,7 @@ function plHover(e){ const g = e.target.closest('.w'); if (!g) return;
     h += `<span>The 4 replicate wells of this dose become one row of the lab sheet:</span><div class="prow"><table><thead><tr><th>Molecule</th><th>Cell_line</th><th>Mode</th><th>Serum</th><th>ConcM</th><th>moy</th></tr></thead><tbody><tr><td>${esc(q[0])}</td><td>${esc(q[1])}</td><td>${esc(q[2])}</td><td>${esc(q[3])}</td><td class="num">${w.p.conc.toExponential(2)}</td><td class="num">${w.p.y.toFixed(3)}</td></tr></tbody></table></div>`; }
   $('#pwell').innerHTML = h; }
 $('#plate96').addEventListener('mouseover', plHover); $('#plate96').addEventListener('focusin', plHover);
+$('#segPlate').innerHTML = Object.entries(PLEX).map(([k,v]) => `<button type="button" data-v="${k}" aria-pressed="${k===PL.mode}">${esc(v.label)}</button>`).join('');
 $('#segPlate').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; PL.mode = b.dataset.v;
   $('#segPlate').querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', x === b)); drawPlate96(); });
 
