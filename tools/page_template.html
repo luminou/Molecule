@@ -923,7 +923,7 @@ document.fonts && document.fonts.ready.then(drawPlate);
   <button type="button" data-t="dark" aria-label="Dark theme" title="Dark theme"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.6A8.2 8.2 0 0 1 9.4 4 8.2 8.2 0 1 0 20 14.6z"/></svg></button>
 </div>
 <style>
-.themesw{position:absolute;top:12px;right:max(16px,env(safe-area-inset-right,0px));z-index:20;display:flex;gap:2px;padding:3px;border:1px solid var(--line);border-radius:999px;background:var(--surface,var(--bg))}
+.themesw{position:fixed;top:12px;right:max(16px,env(safe-area-inset-right,0px));z-index:20;display:flex;gap:2px;padding:3px;border:1px solid var(--line);border-radius:999px;background:var(--surface,var(--bg))}
 .themesw button{all:unset;cursor:pointer;width:30px;height:30px;border-radius:999px;display:grid;place-items:center;color:var(--muted)}
 .themesw button svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 .themesw button[data-t="dark"] svg{fill:currentColor;stroke:none}
