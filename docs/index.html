@@ -16,7 +16,7 @@
 :root{
   --bg:#f4f7f6; --surface:#ffffff; --sunk:#eaf0ee; --ink:#10201d; --ink-2:#475754; --muted:#6f7e7a; --line:#d6dfdc;
   --accent:#0d7461; --accent-soft:#d9efe9; --glow:#d4f25a; --glow-ink:#1d2a05;
-  --s1:#2a78d6; --s2:#eb6834; --s3:#1baf7a; --s4:#eda100; --s5:#e87ba4; --s6:#008300; --s7:#6250d6; --s8:#e34948;
+  --s1:#2a78d6; --s2:#eb6834; --s3:#1baf7a; --s4:#eda100; --s5:#e87ba4; --s6:#008300; --s7:#6250d6; --s8:#e34948; --s9:#0a9bb0; --s10:#8c5a2b; --s11:#7a8a00; --s12:#5b6b8a;
   --seq0:#d4e5f9; --seq1:#86b6ef; --seq2:#2a78d6; --seq3:#0d366b; --nodata:#eef1f0; --hatch:#b9c6c2;
   --display:"Bricolage Grotesque", "Avenir Next", system-ui, sans-serif;
   --body:"IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
@@ -25,12 +25,12 @@
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
   --bg:#0b1211; --surface:#111b19; --sunk:#0e1715; --ink:#e7efed; --ink-2:#a8b7b3; --muted:#7c8b87; --line:#24322f;
   --accent:#4fd0b3; --accent-soft:#163a33; --glow:#c6f03c; --glow-ink:#182204;
-  --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500; --s5:#d55181; --s6:#008300; --s7:#9085e9; --s8:#e66767;
+  --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500; --s5:#d55181; --s6:#008300; --s7:#9085e9; --s8:#e66767; --s9:#33c1d1; --s10:#c08a55; --s11:#a9bb22; --s12:#93a3c6;
   --seq0:#1a2c40; --seq1:#1c5cab; --seq2:#5598e7; --seq3:#cde2fb; --nodata:#16201e; --hatch:#3a4a46; color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#0b1211; --surface:#111b19; --sunk:#0e1715; --ink:#e7efed; --ink-2:#a8b7b3; --muted:#7c8b87; --line:#24322f;
   --accent:#4fd0b3; --accent-soft:#163a33; --glow:#c6f03c; --glow-ink:#182204;
-  --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500; --s5:#d55181; --s6:#008300; --s7:#9085e9; --s8:#e66767;
+  --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500; --s5:#d55181; --s6:#008300; --s7:#9085e9; --s8:#e66767; --s9:#33c1d1; --s10:#c08a55; --s11:#a9bb22; --s12:#93a3c6;
   --seq0:#1a2c40; --seq1:#1c5cab; --seq2:#5598e7; --seq3:#cde2fb; --nodata:#16201e; --hatch:#3a4a46; color-scheme:dark}
 
 *{box-sizing:border-box}
@@ -159,6 +159,8 @@ header.hero .wrap{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1
 .chart{width:100%;display:block;overflow:visible}
 .chart text{font-family:var(--mono);font-size:10.5px;fill:var(--muted)}
 .chart .axt{font-family:var(--body);font-size:11.5px;fill:var(--ink-2)}
+.notice.warn{border:1px solid var(--s4);color:var(--ink)}
+.legend .hidden-s{color:var(--muted);flex-basis:100%;font-size:.76rem}.legend .hidden-s i{background:none;border:1px dashed var(--muted)}
 .legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:.8rem;color:var(--ink-2);margin-top:8px}
 .legend span{display:inline-flex;align-items:center;gap:6px}
 .legend i{width:10px;height:10px;border-radius:50%;flex:none}
@@ -378,7 +380,7 @@ const REFS = {'HG5LN':['none (no receptor)','–'],'HG5LN-hPPARa':['GW 7647','1 
 const MODEN = {'Ago':'Agonist','Antago':'Antagonist (80 % reference)','Antago ref100':'Competition (100 % reference)','Synergie EE2':'Synergy with EE2','Coexpo SP70 10-6 M':'With SPA70 (1 µM)'};
 const SERN = {'YES':'With serum','NO':'Without serum','NC':'Not recorded'};
 const clN = i => CLN[D.cls[i]] || D.cls[i], moN = i => MODEN[D.modes[i]] || D.modes[i], seN = i => SERN[D.sers[i]] || D.sers[i];
-const SERIES = 8;
+const SERIES = 12;
 const $ = s => document.querySelector(s);
 const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
 const tip = $('#tip');
@@ -654,7 +656,7 @@ function renderMolList(){
 $('#f-mol').addEventListener('click', e => { const b = e.target.closest('.caret'); if (!b) return; const k = b.dataset.fam; famOpen.has(k) ? famOpen.delete(k) : famOpen.add(k); renderMolList(); });
 $('#f-mol').addEventListener('change', e => { const cb = e.target; if (!cb.dataset.fam) return; const [ti, fi] = cb.dataset.fam.split('-').map(Number), ids = FAMILIES[ti][1][fi][1];
   const allOn = ids.every(i => state.mol.has(i)); ids.forEach(i => allOn ? state.mol.delete(i) : state.mol.add(i)); if (!allOn) famOpen.add(cb.dataset.fam); renderMolList(); update(); });
-function syncControls(){ document.querySelectorAll('#filters input[type=checkbox]').forEach(cb => { cb.checked = state[cb.dataset.k].has(+cb.dataset.i); }); renderMolList(); }
+function syncControls(){ document.querySelectorAll('#filters input[data-k]').forEach(cb => { cb.checked = state[cb.dataset.k].has(+cb.dataset.i); }); renderMolList(); }
 $('#filters').addEventListener('change', e => { const cb = e.target; if (!cb.dataset.k) return; const s = state[cb.dataset.k]; cb.checked ? s.add(+cb.dataset.i) : s.delete(+cb.dataset.i); if (cb.dataset.k === 'mol') renderMolList(); update(); });
 $('#molSearch').addEventListener('input', renderMolList);
 $('#molClear').addEventListener('click', () => { state.mol.clear(); syncControls(); update(); });
@@ -784,17 +786,22 @@ function fitHill(pts){
 
 /* ---------- main update ---------- */
 let current = [];
+let hiddenKeys = [];
 function update(){
   const rows = D.rows.filter(r => state.mol.has(r[0]) && state.cl.has(r[1]) && state.mode.has(r[2]) && state.ser.has(r[3]));
   current = rows;
   const keys = [...new Set(rows.map(r => r[0]+'|'+r[1]+'|'+r[2]+'|'+r[3]))];
-  const shown = keys.slice(0, SERIES); assignSlots(shown);
+  // series already on the chart keep their place (and colour); new ones fill the free slots
+  const keep = keys.filter(k => slotOf.has(k)), fresh = keys.filter(k => !slotOf.has(k));
+  const pick = new Set([...keep, ...fresh].slice(0, SERIES)), shown = keys.filter(k => pick.has(k)); assignSlots(shown);
+  hiddenKeys = keys.filter(k => !pick.has(k));
   const series = shown.map(k => { const [m,c,mo,s] = k.split('|').map(Number); const pts = byKey.get(k).map(r => ({x: Math.log10(D.concs[r[4]]), conc: D.concs[r[4]], y: r[5], sd: r[6], n: r[7], r}));
     return { k, m, c, mo, s, pts, color: css('--s'+slotOf.get(k)), slot: slotOf.get(k), label: `${D.mols[m]} · ${clN(c)} · ${moN(mo)} · ${seN(s).toLowerCase()}`, fit: state.fit ? fitHill(pts) : null }; });
   const missing = ['cl','mode','ser','mol'].filter(k => state[k].size === 0).map(k => ({cl:'a cell line',mode:'a mode',ser:'a serum condition',mol:'a molecule'})[k]);
   $('#status').textContent = missing.length ? `Tick ${missing.join(', ')} to see data. As in the original app, every filter group needs at least one box ticked.`
-    : rows.length ? `${keys.length} series · ${rows.length} dose points` + (keys.length > SERIES ? ` · charts show the first ${SERIES} series (one colour each); the table lists them all.` : '')
+    : rows.length ? `${keys.length} series · ${rows.length} dose points` + (hiddenKeys.length ? ` · ${hiddenKeys.length} not drawn: the charts show ${SERIES} series at most, the table lists them all. Untick some boxes to see the others.` : '')
     : 'No data for this combination: these molecules were not tested on these cell lines in this mode.';
+  $('#status').classList.toggle('warn', hiddenKeys.length > 0);
   drawLine(series); drawBars(series); drawTable(rows); drawLegend(series);
 }
 
@@ -855,7 +862,9 @@ function drawBars(series){
 }
 
 function drawLegend(series){
-  $('#legend').innerHTML = series.map(se => `<span><i style="background:${se.color}"></i>${esc(se.label)}${se.fit ? ` <em>EC50 ${se.fit.ec50 ? fmtConc(se.fit.ec50) + ' M' : 'n.d.'}</em>` : ''}</span>`).join('');
+  const lab = k => { const [m,c,mo,s] = k.split('|').map(Number); return `${D.mols[m]} · ${clN(c)} · ${moN(mo)} · ${seN(s).toLowerCase()}`; };
+  $('#legend').innerHTML = series.map(se => `<span><i style="background:${se.color}"></i>${esc(se.label)}${se.fit ? ` <em>EC50 ${se.fit.ec50 ? fmtConc(se.fit.ec50) + ' M' : 'n.d.'}</em>` : ''}</span>`).join('')
+    + (hiddenKeys.length ? `<span class="hidden-s"><i></i>Not drawn (${hiddenKeys.length}): ${hiddenKeys.slice(0, 12).map(k => esc(lab(k))).join('; ')}${hiddenKeys.length > 12 ? '…' : ''}</span>` : '');
 }
 function drawTable(rows){
   const sorted = rows.slice().sort((a,b) => a[0]-b[0] || a[1]-b[1] || a[2]-b[2] || a[3]-b[3] || a[4]-b[4]);
