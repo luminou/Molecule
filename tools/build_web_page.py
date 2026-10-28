@@ -15,6 +15,9 @@ from pathlib import Path
 
 import pandas as pd
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from names import clean  # noqa: E402
+
 ROOT = Path(__file__).resolve().parent.parent
 PAGE = ROOT / 'docs' / 'index.html'
 CELL_LINES = ['HG5LN', 'HG5LN-hPPARa', 'HG5LN-mPPARa', 'HG5LN-hPPARg', 'HG5LN-mPPARg', 'HG5LN-zfPPARg',
@@ -24,6 +27,7 @@ FAMILIES = ['Pesticides_plate', 'GOLIATH', 'PPAR_lig', 'Bisphenols', 'Other']
 
 def build(xlsx: Path) -> dict:
     df = pd.read_excel(xlsx, sheet_name='Data')
+    df['Molecule'] = df.Molecule.map(clean)
     excluded = pd.read_excel(xlsx, sheet_name='Excluded data')
     gaps = int((df.moy == 50).sum())
     d = df[(df.moy != 50) & df.ConcM.notna() & df.moy.notna()].copy()
@@ -47,11 +51,12 @@ def build(xlsx: Path) -> dict:
     for f in FAMILIES:
         s = df.groupby('Molecule')[f].agg(lambda x: (x == True).any())  # noqa: E712
         flags[f] = [im[m] for m in s[s].index if m in im]
+    flags['Blind'] = [i for i, m in enumerate(mols) if m.startswith('Blind study')]
 
     dates = d.Date.astype(str).str.extract(r'^(\d{6})')[0].dropna()
     return dict(mols=mols, cls=CELL_LINES, modes=modes, sers=sers, concs=concs, rows=rows,
                 colors={c: df[df.Cell_line == c].Color.iloc[0] for c in CELL_LINES}, flags=flags,
-                stats=dict(raw=len(df), gaps=gaps, measures=len(d), excluded=len(excluded), points=len(p),
+                stats=dict(raw=len(df), rows=len(df) - gaps, gaps=gaps, measures=len(d), excluded=len(excluded), points=len(p),
                            mols=len(mols), cls=len(CELL_LINES), dmin=dates.min(), dmax=dates.max(),
                            runs=int(d.Date.nunique()),
                            combos=int(p.groupby(['Molecule', 'Cell_line', 'Mode', 'Serum']).ngroups)))
@@ -62,6 +67,6 @@ if __name__ == '__main__':
     data = json.dumps(build(xlsx), separators=(',', ':'))
     html = PAGE.read_text(encoding='utf-8')
     start = html.index('const D = ') + len('const D = ')
-    end = html.index(';\nconst SERIES')
+    end = html.index(';\n', start)
     PAGE.write_text(html[:start] + data + html[end:], encoding='utf-8')
     print(f'Updated {PAGE.relative_to(ROOT)} from {xlsx.name}')

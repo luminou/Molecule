@@ -2,10 +2,12 @@
 
 An interactive dashboard for exploring a toxicology screening database: 179 chemicals tested on 11 luciferase reporter cell lines (PPARα, PPARγ and PXR from human, mouse, zebrafish and Xenopus), in agonist and antagonist mode, with and without serum.
 
-I wrote it in Python with **pandas** and **Bokeh** in 2019–2020, while working as a research scientist, so that colleagues could filter a ~30,000-row Excel sheet and read dose–response curves in a few clicks instead of building pivot charts by hand.
+I wrote it in Python with **pandas** and **Bokeh** in 2019–2020, while working as a research scientist, so that colleagues could filter a ~27,000-row Excel sheet and read dose–response curves in a few clicks instead of building pivot charts by hand.
 
 **Live case study and web rebuild:** https://luminou.github.io/Molecule/
 **All data projects:** https://luminou.github.io/Data_Projects/
+
+Part of these data was published in: Garoche C., Boulahtouf A., Grimaldi M., Chiavarina B., Toporova L., den Broeder M.J., Legler J., Bourguet W., Balaguer P. (2021). *Interspecies differences in activation of peroxisome proliferator-activated receptor γ by pharmaceutical and environmental chemicals.* Environ. Sci. Technol. 55(24):16489–16501. [PubMed 34843233](https://pubmed.ncbi.nlm.nih.gov/34843233/) · [doi:10.1021/acs.est.1c04318](https://doi.org/10.1021/acs.est.1c04318)
 
 ---
 
@@ -21,12 +23,24 @@ I wrote it in Python with **pandas** and **Bokeh** in 2019–2020, while working
 
 | Column | Meaning |
 |---|---|
-| `Molecule` | The chemical tested (pesticides, bisphenols, PFAS, drugs, reference ligands). |
-| `Cell_line` | Reporter cell line. **HG5LN** is the control line: it emits light whatever the receptor, so it should stay at 100 %. A drop on HG5LN means fewer living cells, i.e. toxicity at that dose. |
-| `Mode` | `Ago`: does the chemical activate the receptor? `Antago`: does it block a reference activator? An antagonist drop is only meaningful if HG5LN stays at 100 % at the same doses. |
-| `Serum` | Whether the exposure medium contained serum. |
+| `Molecule` | The chemical tested (pesticides, bisphenols, PFAS, drugs, reference ligands). On the web page, names are harmonised (letter codes in brackets removed, spellings unified); the seven coded samples of one anonymised study appear as "Blind study sample 1–7". |
+| `Cell_line` | HeLa reporter cell lines carrying the ligand-binding domain of one receptor fused to GAL4. The web page shows readable names (e.g. `HG5LN-hPPARg` → Human PPARγ). **HG5LN** is the control cell line: it emits light whatever the receptor, so it should stay at 100 %; a drop means fewer living cells. |
+| `Mode` | `Ago`: the chemical alone. `Antago`: with the reference agonist at the dose giving ~80 % of its maximum. `Antago ref100`: the same with the reference at 100 %, to show competitive inhibition. `Synergie EE2`: co-exposure with ethinylestradiol, to look for synergy. `Coexpo SP70 10-6 M`: co-exposure with the PXR antagonist SPA70 at 1 µM. |
+| `Serum` | Whether the exposure medium contained serum. Serum proteins trap lipophilic chemicals (e.g. TBBPA), so environmental chemicals were often tested without serum (with 1 % pluronic acid), where they were 3 to 17 times more potent. Cells are more fragile without serum. |
 | `ConcM` | Concentration in mol/L. |
-| `moy` | Normalised luciferase activity for one run (mean of the wells). |
+| `moy` | Normalised luciferase activity for one run, in % of the reference agonist maximum. |
+
+### Reference agonists (100 % / 80 %)
+
+| Cell line | Reference | 100 % | 80 % |
+|---|---|---|---|
+| HG5LN-hPPARa | GW 7647 | 1 µM | 10 nM |
+| HG5LN-hPPARg / mPPARg | Rosiglitazone | 1 µM | 30 nM |
+| HG5LN-zfPPARg | GW 3965 | 10 µM | 2.6 µM |
+| HELN-xPPARg | Rosiglitazone | 10 µM | 2 µM |
+| HG5LN-hPXR | SR 12813 | 3 µM | 0.3 µM |
+| HG5LN-mPXR | PCN | 10 µM | – |
+| HG5LN-zfPXR / ZFL-zfPXR | Clotrimazole | 1 µM | 30 nM |
 
 ## Repository structure
 
@@ -58,7 +72,7 @@ The app opens at `http://localhost:5006/Molecule`. Edit the path in `Molecule/ma
 
 ## Updating the web page
 
-The web page embeds the aggregated data (about 12,600 dose points), so it runs without a server.
+The web page embeds the aggregated data (about 12,600 dose points), so it runs without a server. Molecule names are harmonised by the mapping in `tools/names.py`.
 
 ```bash
 python tools/build_web_page.py FULL_DATABASE_exemple.xlsx
@@ -81,6 +95,8 @@ The page in `docs/` rebuilds the dashboard in plain JavaScript and SVG so it can
 - **True log-scale** concentration axis instead of text labels.
 
 **Added for the web page**
+- An interactive explainer of the seven test types (agonist, antagonist, competition, toxicity check, synergy with EE2, co-exposure with SPA70, with or without serum), each with a real example curve from the database.
+- A table of cell lines with their lab names and reference agonists.
 - An overview heatmap (molecule × cell line, strongest agonist response), where hatched cells mark conditions that were never tested and pale blue marks tested-but-inactive. Clicking a cell loads it in the dashboard.
 
 ## Author
