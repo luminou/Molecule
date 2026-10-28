@@ -82,6 +82,25 @@ header.hero .wrap{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1
 .sctext{font-size:.88rem;color:var(--ink-2);margin-top:10px}
 .reftable table td:nth-child(2){font-family:var(--mono);font-size:.74rem;color:var(--muted)}
 .reftable{max-height:none}
+.controls{display:flex;flex-wrap:wrap;gap:14px 22px;align-items:center}
+.ctl{display:flex;align-items:center;gap:8px;font:600 .7rem var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:9px;overflow:hidden;background:var(--surface)}
+.seg button{font:500 .8rem var(--body);border:0;background:transparent;color:var(--ink-2);padding:8px 12px;cursor:pointer;border-right:1px solid var(--line);text-transform:none;letter-spacing:0}
+.seg button:last-child{border-right:0}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.platebox{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:16px;align-items:start}
+.platewrap{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px;overflow-x:auto}
+.platewrap svg{display:block;width:100%;min-width:480px;height:auto}
+.pinfo{display:grid;gap:12px;min-width:0}
+.pkey{display:grid;gap:6px;font-size:.84rem;color:var(--ink-2)}
+.pkey span{display:flex;align-items:center;gap:8px}
+.pkey i{width:14px;height:14px;border-radius:50%;flex:none;border:2px solid var(--kc);background:color-mix(in srgb,var(--kc) 22%,transparent)}
+.pwell{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;display:grid;gap:6px;font-size:.88rem;color:var(--ink-2);min-height:120px;min-width:0}
+.pwell b{color:var(--ink);font-family:var(--display)}
+.prow{overflow-x:auto}.prow table{font-size:.72rem}.prow th,.prow td{padding:4px 6px}
+.pnote{font:.72rem var(--mono);color:var(--muted)}
+#plate96 .w{cursor:pointer}#plate96 .w:hover circle.ring{stroke-width:3}
+.def{border-bottom:1px dashed var(--muted);cursor:help}
 /* pipeline */
 .pipe{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;counter-reset:step}
 .step{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:8px;min-width:0;position:relative}
@@ -158,7 +177,7 @@ footer{padding-block:32px 48px;border-top:1px solid var(--line);color:var(--mute
   .pipe{grid-template-columns:repeat(2,minmax(0,1fr))}
   .bench{grid-template-columns:1fr}
   .panel{position:static}
-  .twocharts,.compare{grid-template-columns:1fr}
+  .twocharts,.compare,.platebox{grid-template-columns:1fr}
   .skills{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
 @media (max-width:560px){
@@ -208,17 +227,73 @@ footer{padding-block:32px 48px;border-top:1px solid var(--line);color:var(--mute
         <div class="labchart"><div class="labhead"><b id="scTitle"></b><span id="scSub"></span></div><div id="scChart"></div><div class="legend" id="scLegend"></div><p class="sctext" id="scText"></p></div>
       </div>
     </div>
-    <div class="assay">
-      <ul class="glossary">
-        <li><span class="k">Molecule</span><span class="v">The chemical being tested: pesticides, bisphenols, PFAS, drugs and reference ligands. 179 in this file. The seven “blind study” samples are coded compounds from one anonymised study.</span></li>
-        <li><span class="k">Cell line</span><span class="v">A human HeLa cell line carrying the ligand-binding part of one receptor (PPARα, PPARγ or PXR) from one species, fused to a yeast GAL4 switch that drives the luciferase gene. The control cell line has the switch and the luciferase but no receptor: it should stay at 100 %, and a drop means fewer living cells.</span></li>
-        <li><span class="k">Serum</span><span class="v">Serum feeds the cells, but its proteins (mainly albumin) also trap lipophilic chemicals such as TBBPA, so less of the dose reaches the receptor. Environmental chemicals were therefore often tested without serum: rosiglitazone, GW 3965 and TBBPA were 3 to 17 times more potent that way. The trade-off is that cells without serum are more fragile, so a lower signal can come from stressed cells rather than from the chemical.</span></li>
-        <li><span class="k">ConcM · moy</span><span class="v">Concentration in mol/L, and the normalised luciferase activity at that dose: 100 % is the maximum response to the cell line’s reference agonist.</span></li>
-      </ul>
-      <div class="tablewrap reftable"><table>
-        <thead><tr><th>Name in the dashboard</th><th>Lab name</th><th>Reference agonist</th><th>100 % / 80 %</th></tr></thead>
-        <tbody id="clTable"></tbody>
-      </table></div>
+  </div>
+</section>
+
+
+
+<section aria-labelledby="h-heat">
+  <div class="wrap">
+    <p class="eyebrow">Overview · added for this page</p>
+    <h2 id="h-heat">Which chemicals switched on which receptor?</h2>
+    <p class="lede read">Each column is one molecule, each row one cell line. Colour shows the strongest mean response across all tested doses (agonist mode, with serum): pale blue means tested but inactive, close to 0 %. Hatched cells were never tested in that condition. The top row, HG5LN, is the control line: it sits near 100 % by design and only falls when a dose kills the cells. Columns are sorted from most to least active. Click a cell to load it in the dashboard below.</p>
+    <div class="chips" id="famChips" role="group" aria-label="Molecule family"></div>
+    <div class="heatbox"><svg id="heat" role="img" aria-label="Heatmap of maximum response per molecule and cell line"></svg></div>
+    <div class="heatlegend"><span>Max response</span><span class="ramp" id="ramp"></span><span id="rampLabels">0 % → ≥ 120 %</span><span><i class="nd"></i> not tested (agonist mode, with serum)</span></div>
+  </div>
+</section>
+
+<section aria-labelledby="h-dash" id="dashboard">
+  <div class="wrap">
+    <p class="eyebrow">Interactive dashboard</p>
+    <h2 id="h-dash">Explore the dose–response data</h2>
+    <p class="lede read">Same controls and logic as the Bokeh app: tick at least one box in each group and the charts, table and export update together. It opens on rosiglitazone, a reference PPARγ activator, across the four PPARγ cell lines.</p>
+    <div class="bench">
+      <form class="panel" id="filters" onsubmit="return false">
+        <fieldset><legend><span class="def" data-def="cl">Cell line</span><button type="button" class="linkbtn" data-all="cl">all / none</button></legend><div id="f-cl"></div></fieldset>
+        <div class="cols2">
+          <fieldset><legend><span class="def" data-def="mode">Mode</span></legend><div id="f-mode"></div></fieldset>
+          <fieldset><legend><span class="def" data-def="ser">Serum</span></legend><div id="f-ser"></div></fieldset>
+        </div>
+        <fieldset><legend><span class="def" data-def="mol">Molecule</span><button type="button" class="linkbtn" id="molClear">clear</button></legend>
+          <input class="search" id="molSearch" type="search" placeholder="Search 179 molecules" aria-label="Search molecules">
+          <div class="mollist" id="f-mol"></div>
+        </fieldset>
+      </form>
+      <div class="out">
+        <div class="notice" id="status" aria-live="polite"></div>
+        <div class="card">
+          <div class="cardhead"><h3>Dose–response</h3>
+            <label class="toggle"><input type="checkbox" id="fitToggle" checked> Fit Hill curves (EC50)</label></div>
+          <div id="lineChart"></div>
+          <div class="legend" id="legend"></div>
+        </div>
+        <div class="twocharts">
+          <div class="card"><div class="cardhead"><h3>Bars</h3><span class="sub">mean + SD per dose</span></div><div id="barChart"></div></div>
+          <div class="card"><div class="cardhead"><h3>Data table</h3><button type="button" class="btn ghost" id="copyCsv">Copy as CSV</button></div>
+            <div class="tablewrap"><table id="tbl"><thead><tr><th>Molecule</th><th>Cell line</th><th>Mode</th><th>Serum</th><th>Conc (M)</th><th>Mean</th><th>SD</th><th>n</th></tr></thead><tbody></tbody></table></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+<section aria-labelledby="h-plate">
+  <div class="wrap">
+    <p class="eyebrow">Inside one experiment</p>
+    <h2 id="h-plate">From 96 wells to one row of the database</h2>
+    <p class="lede read">Each plate tests two chemicals on one cell line: the first in rows A–D, the second in rows E–H, at 7 concentrations diluted 3.16-fold, in 4 replicate wells. The four wells of one dose are averaged into the <code>moy</code> value of one row in the lab sheet. Hover a well to see what it holds and the row it ends up in.</p>
+    <div class="controls"><div class="ctl">Test <span class="seg" id="segPlate"><button type="button" data-v="ago" aria-pressed="true">Agonist</button><button type="button" data-v="ant" aria-pressed="false">Antagonist</button></span></div></div>
+    <div class="platebox">
+      <div class="platewrap"><svg id="plate96" viewBox="0 0 640 420" role="img" aria-label="96-well plate layout"></svg></div>
+      <div class="pinfo">
+        <div class="pkey" id="pkey"></div>
+        <div class="pwell" id="pwell"><b>Hover a well</b><span>Its content and the database row it feeds appear here.</span></div>
+        <p class="pnote">Layout from the robot program in my lab notebook. Well brightness is the measured mean from the database, with the run-to-run spread applied to the replicates.</p>
+      </div>
     </div>
   </div>
 </section>
@@ -260,53 +335,6 @@ Button(label='Download',
   </div>
 </section>
 
-<section aria-labelledby="h-heat">
-  <div class="wrap">
-    <p class="eyebrow">Overview · added for this page</p>
-    <h2 id="h-heat">Which chemicals switched on which receptor?</h2>
-    <p class="lede read">Each column is one molecule, each row one cell line. Colour shows the strongest mean response across all tested doses (agonist mode, with serum): pale blue means tested but inactive, close to 0 %. Hatched cells were never tested in that condition. The top row, HG5LN, is the control line: it sits near 100 % by design and only falls when a dose kills the cells. Columns are sorted from most to least active. Click a cell to load it in the dashboard below.</p>
-    <div class="chips" id="famChips" role="group" aria-label="Molecule family"></div>
-    <div class="heatbox"><svg id="heat" role="img" aria-label="Heatmap of maximum response per molecule and cell line"></svg></div>
-    <div class="heatlegend"><span>Max response</span><span class="ramp" id="ramp"></span><span id="rampLabels">0 % → ≥ 120 %</span><span><i class="nd"></i> not tested (agonist mode, with serum)</span></div>
-  </div>
-</section>
-
-<section aria-labelledby="h-dash" id="dashboard">
-  <div class="wrap">
-    <p class="eyebrow">Interactive dashboard</p>
-    <h2 id="h-dash">Explore the dose–response data</h2>
-    <p class="lede read">Same controls and logic as the Bokeh app: tick at least one box in each group and the charts, table and export update together. It opens on rosiglitazone, a reference PPARγ activator, across the four PPARγ cell lines. The Hill fit gives EC50 values of 26 nM (human), 16 nM (mouse) and 0.73 µM (Xenopus), in line with the 24 nM, 16 nM and 718 nM published in the 2021 paper.</p>
-    <div class="bench">
-      <form class="panel" id="filters" onsubmit="return false">
-        <fieldset><legend><span>Cell line</span><button type="button" class="linkbtn" data-all="cl">all / none</button></legend><div id="f-cl"></div></fieldset>
-        <div class="cols2">
-          <fieldset><legend><span>Mode</span></legend><div id="f-mode"></div></fieldset>
-          <fieldset><legend><span>Serum</span></legend><div id="f-ser"></div></fieldset>
-        </div>
-        <fieldset><legend><span>Molecule</span><button type="button" class="linkbtn" id="molClear">clear</button></legend>
-          <input class="search" id="molSearch" type="search" placeholder="Search 179 molecules" aria-label="Search molecules">
-          <div class="mollist" id="f-mol"></div>
-        </fieldset>
-      </form>
-      <div class="out">
-        <div class="notice" id="status" aria-live="polite"></div>
-        <div class="card">
-          <div class="cardhead"><h3>Dose–response</h3>
-            <label class="toggle"><input type="checkbox" id="fitToggle" checked> Fit Hill curves (EC50)</label></div>
-          <div id="lineChart"></div>
-          <div class="legend" id="legend"></div>
-        </div>
-        <div class="twocharts">
-          <div class="card"><div class="cardhead"><h3>Bars</h3><span class="sub">mean + SD per dose</span></div><div id="barChart"></div></div>
-          <div class="card"><div class="cardhead"><h3>Data table</h3><button type="button" class="btn ghost" id="copyCsv">Copy as CSV</button></div>
-            <div class="tablewrap"><table id="tbl"><thead><tr><th>Molecule</th><th>Cell line</th><th>Mode</th><th>Serum</th><th>Conc (M)</th><th>Mean</th><th>SD</th><th>n</th></tr></thead><tbody></tbody></table></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
 <section aria-labelledby="h-skills">
   <div class="wrap">
     <p class="eyebrow">What this project shows</p>
@@ -326,7 +354,7 @@ Button(label='Download',
 
 <script>
 const D = __DATA__;
-const CLN = {'HG5LN':'Control cell line','HG5LN-hPPARa':'Human PPARα','HG5LN-mPPARa':'Mouse PPARα','HG5LN-hPPARg':'Human PPARγ','HG5LN-mPPARg':'Mouse PPARγ','HG5LN-zfPPARg':'Zebrafish PPARγ','HELN-xPPARg':'Xenopus PPARγ','HG5LN-hPXR':'Human PXR','HG5LN-mPXR':'Mouse PXR','HG5LN-zfPXR':'Zebrafish PXR','ZFL-zfPXR':'Zebrafish PXR (liver cells)'};
+const CLN = {'HG5LN':'Control cell line','HG5LN-hPPARa':'Human PPARα','HG5LN-mPPARa':'Mouse PPARα','HG5LN-hPPARg':'Human PPARγ','HG5LN-mPPARg':'Mouse PPARγ','HG5LN-zfPPARg':'Zebrafish PPARγ','HELN-xPPARg':'Xenopus PPARγ','HG5LN-hPXR':'Human PXR','HG5LN-mPXR':'Mouse PXR','HG5LN-zfPXR':'Zebrafish PXR','ZFL-zfPXR':'Zebrafish PXR (zebrafish cells)'};
 const REFS = {'HG5LN':['none (no receptor)','–'],'HG5LN-hPPARa':['GW 7647','1 µM / 10 nM'],'HG5LN-mPPARa':['GW 7647','– / 30 nM'],'HG5LN-hPPARg':['Rosiglitazone','1 µM / 30 nM'],'HG5LN-mPPARg':['Rosiglitazone','1 µM / 30 nM'],'HG5LN-zfPPARg':['GW 3965','10 µM / 2.6 µM'],'HELN-xPPARg':['Rosiglitazone','10 µM / 2 µM'],'HG5LN-hPXR':['SR 12813','3 µM / 0.3 µM'],'HG5LN-mPXR':['PCN','10 µM / –'],'HG5LN-zfPXR':['Clotrimazole','1 µM / 30 nM'],'ZFL-zfPXR':['Clotrimazole','1 µM / –']};
 const MODEN = {'Ago':'Agonist','Antago':'Antagonist (80 % reference)','Antago ref100':'Competition (100 % reference)','Synergie EE2':'Synergy with EE2','Coexpo SP70 10-6 M':'With SPA70 (1 µM)'};
 const SERN = {'YES':'With serum','NO':'Without serum','NC':'Not recorded'};
@@ -386,26 +414,26 @@ function drawPlate(){
 /* ---------- interactive assay explainer ---------- */
 const SCEN = [
   { id:'ago', name:'Agonist', sub:'Does the chemical switch the receptor on?', receptor:true, ref:0, test:3, glow:.9,
-    curves:[['Rosiglitazone','HG5LN-hPPARg','Ago','YES','Rosiglitazone · human PPARγ'],['Rosiglitazone','HG5LN','Ago','YES','Same doses · control cell line',true]],
-    text:'The chemical is added alone. Light rises with the dose as more receptors are switched on. The control line stays flat, so the light really comes from PPARγ.' },
+    curves:[['Troglitazone','HG5LN-hPPARg','Ago','YES','Troglitazone · human PPARγ'],['Troglitazone','HG5LN','Ago','YES','Same doses · control cell line',true]],
+    text:'The chemical is added alone. Light rises with the dose as more receptors are switched on. The control line stays flat at the same doses, so the light really comes from PPARγ.' },
   { id:'ant', name:'Antagonist', sub:'Can it block the reference agonist?', receptor:true, ref:80, test:3, block:true, glow:.15,
-    curves:[['T0070907','HG5LN-hPPARg','Antago','YES','T0070907 + rosiglitazone at 80 %'],['T0070907','HG5LN','Ago','YES','Same doses · control cell line',true]],
-    text:'The reference agonist is added at the dose that gives about 80 % of its maximum. If the chemical takes its place in the receptor without switching it on, the light drops. The control line staying high shows the cells are fine.' },
+    curves:[['Alachlor','HG5LN-hPPARg','Antago','YES','Alachlor + rosiglitazone at 80 % · human PPARγ'],['Alachlor','HG5LN','Ago','YES','Same doses · control cell line',true]],
+    text:'The reference agonist is added at the dose that gives about 80 % of its maximum. The herbicide alachlor pushes the light down while the control line stays at 100 %: the cells are fine, the receptor is blocked.' },
   { id:'comp', name:'Competition', sub:'Does more reference push it out?', receptor:true, ref:100, test:3, block:true, glow:.5,
     curves:[['Diclofenac','HG5LN-hPPARg','Antago','YES','Diclofenac vs 80 % reference'],['Diclofenac','HG5LN-hPPARg','Antago ref100','YES','Diclofenac vs 100 % reference']],
-    text:'The same antagonist test is repeated with the reference agonist at its full dose. A competitive antagonist needs higher doses to win, so the curve shifts to the right. That shift is the proof that both molecules fight for the same pocket.' },
+    text:'The same antagonist test is repeated with the reference agonist at its full dose. A competitive antagonist then needs higher doses to win, so the curve moves to the right: both molecules fight for the same pocket.' },
   { id:'tox', name:'Toxicity check', sub:'Is the drop real or are the cells dying?', receptor:true, ref:80, test:3, dying:true, glow:.25,
     curves:[['TBT','HG5LN-hPXR','Antago','YES','TBT · human PXR, antagonist test'],['TBT','HG5LN','Ago','YES','Same doses · control cell line',true]],
     text:'TBT seems to block human PXR, but the control line also loses light at the highest doses: part of that drop is cells dying, not a true antagonist effect. Reading both curves together avoids a false positive.' },
   { id:'syn', name:'Synergy with EE2', sub:'Do two chemicals act more together?', receptor:true, ref:0, test:2, ee2:true, glow:.6,
     curves:[['trans-Chlordane','HG5LN-mPXR','Ago','YES','trans-Chlordane alone · mouse PXR'],['trans-Chlordane','HG5LN-mPXR','Synergie EE2','YES','trans-Chlordane + EE2'],['EE2','HG5LN-mPXR','Ago','YES','EE2 alone',true]],
-    text:'Inspired by the discovery that the pill estrogen EE2 and the pesticide trans-nonachlor activate PXR far more together than alone. Organochlorine pesticides were retested with EE2: here the mixture switches mouse PXR on at lower doses, while EE2 alone does nothing.' },
-  { id:'spa', name:'With SPA70', sub:'Is the response going through PXR?', receptor:true, ref:0, test:3, spa:true, glow:.85,
-    curves:[['PCN','HG5LN-mPXR','Ago','YES','PCN alone · mouse PXR'],['PCN','HG5LN-mPXR','Coexpo SP70 10-6 M','YES','PCN + SPA70 1 µM']],
-    text:'SPA70 is a PXR antagonist developed against human PXR. Added at a fixed dose, it should flatten a PXR-driven curve. On mouse PXR it barely changes the response to PCN, a reminder that receptors differ between species.' },
-  { id:'ser', name:'Serum or not', sub:'How much of the dose reaches the cells?', receptor:true, ref:0, test:3, serum:true, glow:.55,
-    curves:[['TBBPA','HG5LN-hPPARg','Ago','YES','TBBPA · human PPARγ, with serum'],['TBBPA','HG5LN-hPPARg','Ago','NO','TBBPA · without serum']],
-    text:'Serum proteins catch lipophilic chemicals like the flame retardant TBBPA. Without serum the curve starts about ten times earlier. Cells are more fragile without serum, which is one reason the top dose drops again.' },
+    text:'The pill estrogen EE2 and the pesticide trans-nonachlor are known to activate PXR far more together than alone. Organochlorine pesticides were retested with EE2: here the mixture switches mouse PXR on at lower doses, while EE2 alone does nothing.' },
+  { id:'spa', name:'SPA70', sub:'Does a PXR antagonist flatten the response?', receptor:true, ref:80, test:0, spa:true, glow:.12,
+    curves:[['SPA70','HG5LN-hPXR','Antago','YES','SPA70 + SR 12813 at 80 % · human PXR']],
+    text:'SPA70 is a selective antagonist of human PXR. Added on top of the reference agonist SR 12813, it flattens the PXR response as its dose rises. It was then used at a fixed 1 µM dose to check whether other responses go through PXR.' },
+  { id:'ser', name:'Serum or not', sub:'How much of the dose reaches the cells?', receptor:true, ref:0, test:3, serum:true, glow:.55, xmax:-5.4,
+    curves:[['GW 7647','HG5LN-zfPPARg','Ago','YES','GW 7647 · zebrafish PPARγ, with serum'],['GW 7647','HG5LN-zfPPARg','Ago','NO','GW 7647 · without serum']],
+    text:'Serum proteins can catch lipophilic chemicals, so less of the dose reaches the receptor. Here the same compound switches zebrafish PPARγ on at doses about ten times lower when the medium has no serum.' },
 ];
 let scIdx = 0;
 function scRows(mol, cl, mode, ser){
@@ -447,7 +475,7 @@ function cellSVG(S){
   s += outside.join('');
   if (S.dying) s += `<text x="220" y="272" text-anchor="middle" style="font:11px var(--body);fill:var(--s8)">fewer living cells → less light whatever the receptor does</text>`;
   // key
-  const key = [['var(--s2)','test chemical','c']];
+  const key = S.test ? [['var(--s2)','test chemical','c']] : [];
   if (S.ref) key.push(['var(--s1)', `reference agonist ${S.ref} %`,'d']);
   if (S.ee2) key.push(['var(--s7)','EE2','c']);
   if (S.spa) key.push(['var(--s8)','SPA70 (antagonist)','r']);
@@ -457,18 +485,21 @@ function cellSVG(S){
   return s + '</svg>';
 }
 function miniChart(el, curves){
-  const W = Math.max(280, el.clientWidth), H = 230, m = {l:40,r:10,t:8,b:36}, iw = W-m.l-m.r, ih = H-m.t-m.b;
+  const W = Math.max(280, el.clientWidth), H = 240, m = {l:40,r:10,t:8,b:36}, iw = W-m.l-m.r, ih = H-m.t-m.b;
   let xmin = Infinity, xmax = -Infinity, ymax = 1.2;
   curves.forEach(c => c.pts.forEach(p => { xmin = Math.min(xmin,p.x); xmax = Math.max(xmax,p.x); ymax = Math.max(ymax, p.y + (p.sd||0)); }));
   xmin = Math.floor(xmin-.2); xmax = Math.ceil(xmax+.2); ymax = Math.ceil(ymax*10)/10;
   const X = x => m.l + (x-xmin)/(xmax-xmin)*iw, Y = y => m.t + ih - Math.max(0,y)/ymax*ih;
   let s = `<svg class="chart" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}">`;
   for (const t of yTicks(ymax)) s += `<line x1="${m.l}" x2="${W-m.r}" y1="${Y(t)}" y2="${Y(t)}" stroke="var(--line)" stroke-width=".6"/><text x="${m.l-6}" y="${Y(t)+3.5}" text-anchor="end">${Math.round(t*100)}%</text>`;
-  const every = (xmax-xmin) > 6 ? 2 : 1;
-  for (let e = xmin; e <= xmax; e++){ if ((e-xmin) % every) continue; s += `<text x="${X(e)}" y="${m.t+ih+16}" text-anchor="middle">10${sup(e)}</text>`; }
-  s += `<text class="axt" x="${m.l+iw/2}" y="${H-4}" text-anchor="middle">Concentration (M)</text>`;
+  for (let e = xmin; e <= xmax; e++) s += `<text x="${X(e)}" y="${m.t+ih+16}" text-anchor="middle">10${sup(e)}</text>`;
+  s += `<text class="axt" x="${m.l+iw/2}" y="${H-4}" text-anchor="middle">Concentration (M) · Hill fit</text>`;
   curves.forEach(c => {
-    s += `<path d="${c.pts.map((p,i)=>(i?'L':'M')+X(p.x).toFixed(1)+' '+Y(p.y).toFixed(1)).join('')}" fill="none" stroke="${c.color}" stroke-width="2" ${c.dash?'stroke-dasharray="5 4"':''}/>`;
+    const f = c.pts.length >= 4 ? fitHill(c.pts) : null;
+    if (f){ const lo = c.pts[0].x - .15, hi = c.pts[c.pts.length-1].x + .15; let d = '';
+      for (let i = 0; i <= 50; i++){ const x = lo + (hi-lo)*i/50; d += (i?'L':'M') + X(x).toFixed(1) + ' ' + Y(Math.min(ymax, hill(f.p, x))).toFixed(1); }
+      s += `<path d="${d}" fill="none" stroke="${c.color}" stroke-width="2" ${c.dash?'stroke-dasharray="2 4"':'stroke-dasharray="6 4"'}/>`; }
+    else s += `<path d="${c.pts.map((p,i)=>(i?'L':'M')+X(p.x).toFixed(1)+' '+Y(p.y).toFixed(1)).join('')}" fill="none" stroke="${c.color}" stroke-width="2"/>`;
     c.pts.forEach(p => { if (p.sd) s += `<path d="M${X(p.x)} ${Y(p.y-p.sd)}V${Y(p.y+p.sd)}" stroke="${c.color}" stroke-width="1" opacity=".6"/>`; s += `<circle cx="${X(p.x)}" cy="${Y(p.y)}" r="4" fill="${c.color}" stroke="var(--surface)" stroke-width="1.5"/>`; });
   });
   el.innerHTML = s + '</svg>';
@@ -478,7 +509,11 @@ function showScenario(i){
   document.querySelectorAll('#scen button').forEach((b,j) => b.setAttribute('aria-selected', j === i));
   $('#assayDiagram').innerHTML = cellSVG(S);
   const cols = ['--s2','--s1','--s7'];
-  const curves = S.curves.map((c,k) => ({ pts: scRows(c[0],c[1],c[2],c[3]), label: c[4], dash: !!c[5], color: css(c[5] ? '--muted' : cols[k]) })).filter(c => c.pts.length);
+  let curves = S.curves.map((c,k) => ({ pts: scRows(c[0],c[1],c[2],c[3]), label: c[4], dash: !!c[5], color: css(c[5] ? '--muted' : cols[k]) })).filter(c => c.pts.length);
+  // keep the dose range shared by every curve of the example
+  if (curves.length > 1){ const common = curves.map(c => new Set(c.pts.map(p => p.x.toFixed(3)))).reduce((a,b) => new Set([...a].filter(x => b.has(x))));
+    if (common.size >= 4) curves.forEach(c => c.pts = c.pts.filter(p => common.has(p.x.toFixed(3)))); }
+  if (S.xmax != null) curves.forEach(c => c.pts = c.pts.filter(p => p.x <= S.xmax));
   $('#scTitle').textContent = S.name; $('#scSub').textContent = S.sub;
   miniChart($('#scChart'), curves);
   $('#scLegend').innerHTML = curves.map(c => `<span><i style="background:${c.color}"></i>${esc(c.label)}</span>`).join('');
@@ -490,7 +525,6 @@ function initScenarios(){
   $('#scen').addEventListener('click', e => { const b = e.target.closest('button'); if (b){ lock = Date.now() + 700; showScenario(+b.dataset.i); } });
   addEventListener('scroll', () => { lock = Math.max(lock, Date.now() + 250); }, {passive:true});
   $('#scen').addEventListener('mouseover', e => { const b = e.target.closest('button'); if (canHover && b && Date.now() > lock && +b.dataset.i !== scIdx) showScenario(+b.dataset.i); });
-  $('#clTable').innerHTML = D.cls.map((c,i) => `<tr><td>${clN(i)}</td><td>${c}</td><td>${REFS[c][0]}</td><td class="num">${REFS[c][1]}</td></tr>`).join('');
   showScenario(0);
 }
 
@@ -553,6 +587,72 @@ $('#molSearch').addEventListener('input', renderMolList);
 $('#molClear').addEventListener('click', () => { state.mol.clear(); syncControls(); update(); });
 document.querySelector('[data-all="cl"]').addEventListener('click', () => { if (state.cl.size === D.cls.length) state.cl.clear(); else D.cls.forEach((_,i) => state.cl.add(i)); syncControls(); update(); });
 $('#fitToggle').addEventListener('change', e => { state.fit = e.target.checked; update(); });
+
+/* ---------- definitions on hover ---------- */
+const DEFS = {
+  mol: 'The chemical being tested.',
+  cl: 'A human cell line carrying the ligand-binding part of one receptor (PPARα, PPARγ or PXR) from one species, fused to a luciferase reporter gene.',
+  mode: 'The type of test: the chemical alone, or together with a reference agonist, EE2 or SPA70. Hover a mode for details.',
+  ser: 'Serum feeds the cells, but its proteins can lower the potency of lipophilic chemicals, so some of them were tested with and without serum for comparison.',
+};
+const MODEDEF = {'Ago':'The chemical alone. Light is given in % of the reference agonist’s maximum.','Antago':'The chemical plus the reference agonist at the dose giving about 80 % of its maximum. A drop means the receptor is blocked.','Antago ref100':'The antagonist test repeated with the reference at 100 %. A competitive antagonist then needs higher doses.','Synergie EE2':'The chemical together with ethinylestradiol (EE2), to look for cocktail effects.','Coexpo SP70 10-6 M':'The chemical together with SPA70 at 1 µM, a PXR antagonist, to check that the response goes through PXR.'};
+const SERDEF = {'YES':'Medium with serum during exposure.','NO':'Medium without serum (with 1 % pluronic acid) during exposure.','NC':'Serum condition not recorded in the lab sheet.'};
+function defTip(e){
+  const d = e.target.closest('.def'); if (d){ showTip(`<b>${esc(d.textContent)}</b><br>${esc(DEFS[d.dataset.def])}`, e); return true; }
+  const lab = e.target.closest('label.ck'); if (!lab) return false;
+  const cb = lab.querySelector('input'); const k = cb.dataset.k, i = +cb.dataset.i;
+  if (k === 'cl'){ const c = D.cls[i], r = REFS[c]; showTip(`<b>${esc(clN(i))}</b><br><span class="m">lab name ${esc(c)}</span><br>Reference agonist: ${esc(r[0])}${r[1] !== '–' ? ` (100 % / 80 %: ${esc(r[1])})` : ''}`, e); return true; }
+  if (k === 'mode'){ showTip(`<b>${esc(moN(i))}</b><br>${esc(MODEDEF[D.modes[i]] || '')}`, e); return true; }
+  if (k === 'ser'){ showTip(`<b>${esc(seN(i))}</b><br>${esc(SERDEF[D.sers[i]] || '')}`, e); return true; }
+  return false;
+}
+$('#filters').addEventListener('mousemove', e => { if (!defTip(e)) hideTip(); });
+$('#filters').addEventListener('mouseleave', hideTip);
+
+/* ---------- 96-well plate (inside one experiment) ---------- */
+const PL = { mode: 'ago' };
+const PLEX = {
+  ago: { top: ['Rosiglitazone','HG5LN-hPPARg','Ago','YES'], bot: ['Troglitazone','HG5LN-hPPARg','Ago','YES'] },
+  ant: { top: ['T0070907','HG5LN-hPPARg','Antago','YES'], bot: ['GW 9662','HG5LN-hPPARg','Antago','YES'] },
+};
+function plRows(q){ const a = scRows(...q); return a.slice(-7); }
+function plWell(r, c){ // r 0..7, c 0..11
+  const half = r < 4 ? 'top' : 'bot', row = 'ABCDEFGH'[r], rep = r % 4;
+  if (c === 0 || c === 11 || (c === 2 && PL.mode === 'ago')) return { kind:'ctl', title:`${row}${c+1} · solvent control`, text:'Cells with the solvent only (0.1 % DMSO): the background light, or basal level.' };
+  if (c === 2) return { kind:'ref80', title:`${row}3 · reference agonist at 80 %`, text:'Rosiglitazone at 30 nM alone: the level an antagonist has to push down.' };
+  if (c === 1 || c === 10) return { kind:'ref', title:`${row}${c+1} · reference agonist, full dose`, text:'Rosiglitazone at 1 µM: defines 100 % for this cell line.' };
+  const k = c - 3, q = PLEX[PL.mode][half], pts = plRows(q), p = pts[k];
+  return { kind:'chem', half, k, rep, q, p, title:`${row}${c+1} · ${q[0]}, dose ${k+1} of 7`, text:`Replicate ${rep+1} of 4${PL.mode === 'ant' ? ', with rosiglitazone at 80 %' : ''}.` };
+}
+function drawPlate96(){
+  const svg = $('#plate96'), x0 = 56, y0 = 64, step = 44, rad = 17;
+  const col = { ctl:css('--muted'), ref:css('--s2'), ref80:css('--s2'), chem:css('--s3') };
+  let s = `<rect x="6" y="6" width="628" height="408" rx="22" style="fill:var(--sunk);stroke:var(--line)"/>`;
+  for (let c=0;c<12;c++) s += `<text x="${x0+c*step}" y="34" text-anchor="middle" style="font:11px var(--mono);fill:var(--muted)">${c+1}</text>`;
+  for (let r=0;r<8;r++) s += `<text x="26" y="${y0+r*step+4}" text-anchor="middle" style="font:11px var(--mono);fill:var(--muted)">${'ABCDEFGH'[r]}</text>`;
+  s += `<line x1="40" x2="590" y1="${y0+3.5*step}" y2="${y0+3.5*step}" style="stroke:var(--muted);stroke-dasharray:4 4"/>`;
+  ['top','bot'].forEach((h,j) => { const q = PLEX[PL.mode][h]; s += `<text x="606" y="${y0+(1.5+4*j)*step+4}" text-anchor="middle" transform="rotate(90 606 ${y0+(1.5+4*j)*step})" style="font:600 10px var(--body);fill:var(--ink-2)">${esc(q[0].toUpperCase())}</text>`; });
+  for (let r=0;r<8;r++) for (let c=0;c<12;c++){
+    const w = plWell(r,c), cx = x0+c*step, cy = y0+r*step;
+    let v = w.kind === 'ref' ? 1 : w.kind === 'ref80' ? .8 : w.kind === 'ctl' ? .12 : 0;
+    if (w.kind === 'chem' && w.p){ const jitter = [-.9,.4,-.2,.7][w.rep] * (w.p.sd || 0); v = w.p.y + jitter; }
+    v = Math.max(0, Math.min(1, v));
+    s += `<g class="w" data-r="${r}" data-c="${c}" tabindex="0"><circle class="ring" cx="${cx}" cy="${cy}" r="${rad}" style="fill:var(--surface);stroke:${col[w.kind]};stroke-width:2"/>`;
+    if (v > .02) s += `<circle cx="${cx}" cy="${cy}" r="${rad-4}" style="fill:var(--glow);opacity:${(.1+.9*v).toFixed(2)}"/>`;
+    s += `</g>`;
+  }
+  svg.innerHTML = s;
+  $('#pkey').innerHTML = [[css('--muted'),'Solvent control (basal)'],[css('--s2'),'Reference agonist: 100 % (cols 2 and 11)' + (PL.mode==='ant' ? ', 80 % alone (col 3)' : '')],[css('--s3'),'Chemicals: 7 doses × 4 replicates (cols 4–10)']].map(([c,l]) => `<span><i style="--kc:${c}"></i>${l}</span>`).join('');
+}
+function plHover(e){ const g = e.target.closest('.w'); if (!g) return;
+  const w = plWell(+g.dataset.r, +g.dataset.c);
+  let h = `<b>${esc(w.title)}</b><span>${esc(w.text)}</span>`;
+  if (w.kind === 'chem' && w.p){ const q = w.q;
+    h += `<span>The 4 replicate wells of this dose become one row of the lab sheet:</span><div class="prow"><table><thead><tr><th>Molecule</th><th>Cell_line</th><th>Mode</th><th>Serum</th><th>ConcM</th><th>moy</th></tr></thead><tbody><tr><td>${esc(q[0])}</td><td>${esc(q[1])}</td><td>${esc(q[2])}</td><td>${esc(q[3])}</td><td class="num">${w.p.conc.toExponential(2)}</td><td class="num">${w.p.y.toFixed(3)}</td></tr></tbody></table></div>`; }
+  $('#pwell').innerHTML = h; }
+$('#plate96').addEventListener('mouseover', plHover); $('#plate96').addEventListener('focusin', plHover);
+$('#segPlate').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; PL.mode = b.dataset.v;
+  $('#segPlate').querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', x === b)); drawPlate96(); });
 
 /* stable colour per series: a series keeps its slot while it stays visible */
 const slotOf = new Map();
@@ -676,7 +776,7 @@ $('#copyCsv').addEventListener('click', async e => {
 });
 
 /* ---------- boot & theme reactivity ---------- */
-function redrawAll(){ drawPlate(); drawHeat(); update(); if (typeof SCEN !== "undefined") showScenario(scIdx); }
+function redrawAll(){ drawPlate(); drawHeat(); drawPlate96(); update(); if (typeof SCEN !== "undefined") showScenario(scIdx); }
 initScenarios(); syncControls(); redrawAll();
 let rz; addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(() => { drawHeat(); update(); showScenario(scIdx); }, 120); });
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change', redrawAll);

@@ -24,9 +24,9 @@ Part of these data was published in: Garoche C., Boulahtouf A., Grimaldi M., Chi
 | Column | Meaning |
 |---|---|
 | `Molecule` | The chemical tested (pesticides, bisphenols, PFAS, drugs, reference ligands). On the web page, names are harmonised (letter codes in brackets removed, spellings unified); the seven coded samples of one anonymised study appear as "Blind study sample 1–7". |
-| `Cell_line` | HeLa reporter cell lines carrying the ligand-binding domain of one receptor fused to GAL4. The web page shows readable names (e.g. `HG5LN-hPPARg` → Human PPARγ). **HG5LN** is the control cell line: it emits light whatever the receptor, so it should stay at 100 %; a drop means fewer living cells. |
+| `Cell_line` | HeLa reporter cell lines carrying the ligand-binding domain of one receptor fused to GAL4. The web page shows readable names (e.g. `HG5LN-hPPARg` → Human PPARγ, `ZFL-zfPXR` → Zebrafish PXR in zebrafish cells). **HG5LN** is the control cell line: it emits light whatever the receptor, so it should stay at 100 %; a drop means fewer living cells. |
 | `Mode` | `Ago`: the chemical alone. `Antago`: with the reference agonist at the dose giving ~80 % of its maximum. `Antago ref100`: the same with the reference at 100 %, to show competitive inhibition. `Synergie EE2`: co-exposure with ethinylestradiol, to look for synergy. `Coexpo SP70 10-6 M`: co-exposure with the PXR antagonist SPA70 at 1 µM. |
-| `Serum` | Whether the exposure medium contained serum. Serum proteins trap lipophilic chemicals (e.g. TBBPA), so environmental chemicals were often tested without serum (with 1 % pluronic acid), where they were 3 to 17 times more potent. Cells are more fragile without serum. |
+| `Serum` | Whether the exposure medium contained serum. Serum feeds the cells, but its proteins can lower the potency of lipophilic chemicals, so some of them were tested with and without serum for comparison. |
 | `ConcM` | Concentration in mol/L. |
 | `moy` | Normalised luciferase activity for one run, in % of the reference agonist maximum. |
 
@@ -96,7 +96,8 @@ The page in `docs/` rebuilds the dashboard in plain JavaScript and SVG so it can
 
 **Added for the web page**
 - An interactive explainer of the seven test types (agonist, antagonist, competition, toxicity check, synergy with EE2, co-exposure with SPA70, with or without serum), each with a real example curve from the database.
-- A table of cell lines with their lab names and reference agonists.
+- Definitions on hover in the dashboard: each parameter, each mode, and each cell line with its lab name and reference agonist.
+- A 96-well plate view showing how the 4 replicate wells of one dose become one row of the lab sheet.
 - An overview heatmap (molecule × cell line, strongest agonist response), where hatched cells mark conditions that were never tested and pale blue marks tested-but-inactive. Clicking a cell loads it in the dashboard.
 
 ## Author
